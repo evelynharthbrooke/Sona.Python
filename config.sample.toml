@@ -1,0 +1,11 @@
+[general]
+
+  [general.bot]
+  case_insensitive   = true # whether or not to be case insensitive
+  max_messages       = 2500 # max amount of messages to fetch
+  offline_members    = true # whether or not to cache offline members
+  heartbeat_timeout  = 30   # heatbeat timeout in seconds
+  prefixes           = ['$']
+
+  [general.api]
+  token              = "your token goes here"
