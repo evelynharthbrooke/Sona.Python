@@ -2,14 +2,15 @@ import logging
 import pathlib
 import sys
 import time
-import arrow
 from platform import python_version
 
+import arrow
 import discord
 import toml
+import psutil
 from discord.ext import commands
 
-config = toml.load('../config.toml')
+config = toml.load('./config.toml')
 owners = config['general']['bot']['owners']
 prefixes = config['general']['bot']['prefixes']
 debug = config['general']['bot']['debug']
@@ -25,6 +26,8 @@ class SonaClient(commands.AutoShardedBot):
                          help_command=commands.DefaultHelpCommand())
         self.owners = owners,
         self.uptime = arrow.now()
+        # add the bot's current process as a available property.
+        self.process = psutil.Process()
         self.database = None
         self.prefixes = {}
 
