@@ -1,2 +1,6 @@
-discord.py[voice]
-toml
+discord.py[voice]   # The main library used for interacting with the Discord API.
+jishaku             # A nice debug cog / extension for the bot
+toml                # Used for the configuration system
+youtube_dl          # Will eventually be used for voice
+arrow               # Nice date & time formatting library
+psutil              # Used to get various system information
