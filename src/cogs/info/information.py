@@ -1,21 +1,22 @@
+import platform
+
 import arrow
 import discord
 import psutil
-import platform
 from discord.ext import commands
 
 from sona import SonaClient
 from utilities.util import retrieve_cpu_name
 
 
-class Info(commands.Cog, name='Information'):
+class Information(commands.Cog):
     def __init__(self, bot: SonaClient):
         self.bot = bot
 
     @commands.command("about", aliases=["info"])
     async def about(self, context: commands.Context):
         """
-        Retrieves information about Sona.
+        Retrieves information about the bot.
         """
 
         avatar_url = self.bot.user.avatar_url
@@ -23,6 +24,10 @@ class Info(commands.Cog, name='Information'):
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
         uptime = self.bot.uptime.humanize()
+
+        # Python version information
+        python = platform.python_version()
+        revision = platform.python_revision()
 
         dcord = discord.__version__
         commands = len(self.bot.commands)
@@ -38,8 +43,9 @@ class Info(commands.Cog, name='Information'):
         embed.add_field(name="__**Statistics:**__", value=f'**Discord.py:** {dcord}\n'
                                                           f'**Commands:** {commands}\n'
                                                           f'**Cogs loaded:** {cogs}')
-
-        embed.set_footer(text=f'Sona user ID: {self.bot.user.id}')
+        embed.add_field(name="__**Python:**__", value=f'**Version:** {python}\n'
+                                                      f'**Revision:** {revision}\n')
+        embed.set_footer(text=f'{name} user ID: {self.bot.user.id}')
 
         return await context.send(embed=embed)
 
@@ -69,7 +75,8 @@ class Info(commands.Cog, name='Information'):
         # Information related to the bot's process
         proc_threads = self.bot.process.num_threads()
         proc_cpu_usage = round(self.bot.process.cpu_percent())
-        proc_mem_used = round(self.bot.process.memory_full_info().rss / 1048576)
+        proc_mem_used = round(
+            self.bot.process.memory_full_info().rss / 1048576)
         proc_id = self.bot.process.pid
 
         embed = discord.Embed(color=discord.Color.blurple())
@@ -93,4 +100,4 @@ class Info(commands.Cog, name='Information'):
 
 
 def setup(bot: SonaClient):
-    bot.add_cog(Info(bot))
+    bot.add_cog(Information(bot))

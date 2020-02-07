@@ -6,8 +6,8 @@ from platform import python_version
 
 import arrow
 import discord
-import toml
 import psutil
+import toml
 from discord.ext import commands
 
 config = toml.load('./config.toml')
@@ -67,5 +67,5 @@ class SonaClient(commands.AutoShardedBot):
 
     def run(self, *args, **kwargs):
         self.load_extension('jishaku')
-        self.load_extension('cogs.info.info')
+        self.load_extension('cogs.info.information')
         return super().run(*args, **kwargs)
