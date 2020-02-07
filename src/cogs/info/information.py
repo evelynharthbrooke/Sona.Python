@@ -8,6 +8,8 @@ from discord.ext import commands
 from sona import SonaClient
 from utilities.util import retrieve_cpu_name
 
+from __init__ import VERSION, GIT_SHA
+
 
 class Information(commands.Cog):
     def __init__(self, bot: SonaClient):
@@ -37,6 +39,7 @@ class Information(commands.Cog):
         embed.set_author(icon_url=avatar_url, name=name)
 
         embed.add_field(name="__**Basic Info:**__", value=f'**Started:** {uptime}\n'
+                                                          f'**Version:** {VERSION} (rev. {GIT_SHA})\n'
                                                           f'**Users:** {users}\n'
                                                           f'**Guilds:** {guilds}')
         embed.add_field(name="\u200B", value="\u200B")

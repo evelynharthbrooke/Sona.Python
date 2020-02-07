@@ -68,4 +68,5 @@ class SonaClient(commands.AutoShardedBot):
     def run(self, *args, **kwargs):
         self.load_extension('jishaku')
         self.load_extension('cogs.info.information')
+        self.load_extension('cogs.misc.network.network')
         return super().run(*args, **kwargs)
