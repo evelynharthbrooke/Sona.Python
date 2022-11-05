@@ -33,7 +33,7 @@ class Information(Cog):
         embed.set_author(name=name, icon_url=avatar_url)
         embed.add_field("__**Basic Info:**__", f"**Started:** {uptime}\n**Version:** {version} (rev. {hash})\n**Users:** {users}\n**Guilds:** {guilds}")
         embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs loaded:** {cogs}")
+        embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
         embed.set_footer(text=f"{name} user ID: {self.bot.user.id}")
 
         await context.channel.send(embed=embed)
@@ -69,7 +69,7 @@ class Information(Cog):
         embed.add_field("__**System:**__", value=f"**Started:** {uptime}\n**Type:** {arch}")
         embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total} MiB\n**Used:** {mem_used} MiB\n**Free:** {mem_free} MiB")
         embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Process:**__", value=f"**Memory usage:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU usage:**: {proc_load}%")
+        embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
         await context.channel.send(embed=embed)

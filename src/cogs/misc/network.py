@@ -19,7 +19,7 @@ class Network(Cog):
         versions = "\n".join(version for version in regex_b[:-1])
         message = f"**__Available Linux Kernel Versions:__**\n\n{versions}"
 
-        await context.send(message)
+        await context.channel.send(message)
 
 
 def setup(bot: Client):
