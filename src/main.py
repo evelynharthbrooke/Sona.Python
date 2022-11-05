@@ -1,18 +1,16 @@
-import logging
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
 
-import discord
-import toml
+from client import Client
 
-from sona import SonaClient
+with open("./config.toml", mode="rb") as c:
+    config = tomllib.load(c)
 
-from discord import ActivityType
-from discord.ext import commands
-from discord.ext.commands import AutoShardedBot, when_mentioned_or
 
-config = toml.load('./config.toml')
-token = config['general']['api']['token']
-token_two = config['general']['api']['token_two']
+token = config["general"]["api"]["token"]
 
-bot = SonaClient()
+bot = Client()
 
-bot.run(token_two)
+bot.run(token)

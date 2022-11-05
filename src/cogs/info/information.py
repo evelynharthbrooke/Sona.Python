@@ -1,106 +1,79 @@
 import platform
 
 import arrow
-import discord
 import psutil
-from discord.ext import commands
+from disnake import Color, Embed
+from disnake import __version__ as disnake_version
+from disnake.ext.commands import Cog, Context, command
 
-from sona import SonaClient
-from utilities.util import retrieve_cpu_name
-
-from __init__ import VERSION, GIT_SHA
+from client import Client
+from constants import hash, version
 
 
-class Information(commands.Cog):
-    def __init__(self, bot: SonaClient):
+class Information(Cog):
+    def __init__(self, bot: Client):
         self.bot = bot
 
-    @commands.command("about", aliases=["info"])
-    async def about(self, context: commands.Context):
-        """
-        Retrieves information about the bot.
-        """
+    @command("about", aliases=["info"])
+    async def about(self, context: Context):
+        """Retrieves information about the bot."""
 
-        avatar_url = self.bot.user.avatar_url
+        avatar_url = self.bot.user.avatar.url
         name = self.bot.user.name
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
         uptime = self.bot.uptime.humanize()
 
-        # Python version information
         python = platform.python_version()
-        revision = platform.python_revision()
 
-        dcord = discord.__version__
         commands = len(self.bot.commands)
         cogs = len(self.bot.cogs)
 
-        embed = discord.Embed(color=discord.Color.blurple())
-        embed.set_author(icon_url=avatar_url, name=name)
+        embed = Embed(color=Color.blurple())
+        embed.set_author(name=name, icon_url=avatar_url)
+        embed.add_field("__**Basic Info:**__", f"**Started:** {uptime}\n**Version:** {version} (rev. {hash})\n**Users:** {users}\n**Guilds:** {guilds}")
+        embed.add_field("\u200B", "\u200B")
+        embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs loaded:** {cogs}")
+        embed.set_footer(text=f"{name} user ID: {self.bot.user.id}")
 
-        embed.add_field(name="__**Basic Info:**__", value=f'**Started:** {uptime}\n'
-                                                          f'**Version:** {VERSION} (rev. {GIT_SHA})\n'
-                                                          f'**Users:** {users}\n'
-                                                          f'**Guilds:** {guilds}')
-        embed.add_field(name="\u200B", value="\u200B")
-        embed.add_field(name="__**Statistics:**__", value=f'**Discord.py:** {dcord}\n'
-                                                          f'**Commands:** {commands}\n'
-                                                          f'**Cogs loaded:** {cogs}')
-        embed.add_field(name="__**Python:**__", value=f'**Version:** {python}\n'
-                                                      f'**Revision:** {revision}\n')
-        embed.set_footer(text=f'{name} user ID: {self.bot.user.id}')
+        await context.channel.send(embed=embed)
 
-        return await context.send(embed=embed)
-
-    @commands.command("system", aliases=["sys"])
-    async def system(self, ctx: commands.Context):
-        """
-        Gets information about the host system.
-        """
-        avatar_url = self.bot.user.avatar_url
+    @command("system", aliases=["sys"])
+    async def system(self, context: Context):
+        """Gets information about the host system."""
+        avatar_url = self.bot.user.avatar.url
         name = self.bot.user.name
 
-        # CPU details
-        cpu_cores = psutil.cpu_count(logical=False)
-        cpu_threads = psutil.cpu_count(logical=True)
-        cpu_usage = f'{psutil.cpu_percent(interval=0.1)}%'
-        cpu_frequency = f'{psutil.cpu_freq(False).current / 1000}'
+        cores = psutil.cpu_count(logical=False)
+        threads = psutil.cpu_count(logical=True)
+        load = f"{psutil.cpu_percent(interval=0.1)}%"
+        freq = f"{psutil.cpu_freq(False).current / 1000}"
 
-        # Generic system statistics and information
-        system_type = platform.machine()
-        system_uptime = arrow.get(psutil.boot_time()).humanize()
+        arch = platform.machine()
+        uptime = arrow.get(psutil.boot_time()).humanize()
 
-        # Memory information
         mem_total = round(psutil.virtual_memory().total / 1048576)
         mem_used = round(psutil.virtual_memory().used / 1048576)
         mem_free = round(psutil.virtual_memory().free / 1048576)
 
-        # Information related to the bot's process
         proc_threads = self.bot.process.num_threads()
-        proc_cpu_usage = round(self.bot.process.cpu_percent())
-        proc_mem_used = round(
-            self.bot.process.memory_full_info().rss / 1048576)
+        proc_load = round(self.bot.process.cpu_percent())
+        proc_mem = round(self.bot.process.memory_full_info().rss / 1048576)
         proc_id = self.bot.process.pid
 
-        embed = discord.Embed(color=discord.Color.blurple())
-        embed.set_author(icon_url=avatar_url, name=f'{name} System Statistics')
-        embed.description = f'Information about {name}\'s host system.'
-        embed.add_field(name="__**CPU:**__", value=f'**Cores:** {cpu_cores}\n'
-                                                   f'**Threads:** {cpu_threads}\n'
-                                                   f'**Usage:** {cpu_usage}\n'
-                                                   f'**Frequency:** {cpu_frequency} GHz')
-        embed.add_field(name="__**System:**__", value=f'**Started:** {system_uptime}\n'
-                                                      f'**System type:** {system_type}')
-        embed.add_field(name="__**Memory:**__", value=f'**Total:** {mem_total} MiB\n'
-                                                      f'**Used:** {mem_used} MiB\n'
-                                                      f'**Free:** {mem_free} MiB', inline=False)
-        embed.add_field(name="__**Process:**__", value=f'**Memory usage:** {proc_mem_used} MiB\n'
-                                                       f'**Threads:** {proc_threads}\n'
-                                                       f'**CPU usage:**: {proc_cpu_usage}%')
-        embed.set_footer(text=f'{name} process identifier: {proc_id}')
+        embed = Embed(color=Color.blurple())
+        embed.description = f"Information about {name}'s host system."
+        embed.set_author(name=f"{name} System Statistics", icon_url=avatar_url)
+        embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq} GHz")
+        embed.add_field("\u200B", "\u200B")
+        embed.add_field("__**System:**__", value=f"**Started:** {uptime}\n**Type:** {arch}")
+        embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total} MiB\n**Used:** {mem_used} MiB\n**Free:** {mem_free} MiB")
+        embed.add_field("\u200B", "\u200B")
+        embed.add_field("__**Process:**__", value=f"**Memory usage:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU usage:**: {proc_load}%")
+        embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
-        return await ctx.send(embed=embed)
+        await context.channel.send(embed=embed)
 
 
-def setup(bot: SonaClient):
+def setup(bot: Client):
     bot.add_cog(Information(bot))
