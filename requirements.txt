@@ -1,5 +1,5 @@
 arrow               # Nice date & time formatting library
-disnake             # Extensive Python library used to interact with the Discord API.
+disnake[voice]      # Extensive Python library used to interact with the Discord API.
 psutil              # Used to get various system information
 requests            # Used for HTTP requests
 tomli               # Used for the configuration system
