@@ -12,7 +12,7 @@ class Network(commands.Cog):
 
     @commands.slash_command()
     async def kernel(interaction: ApplicationCommandInteraction):
-        """Retrieves information about various Linux kernel versions."""
+        """Retrieves the latest available Linux kernel versions."""
 
         request = requests.get("https://www.kernel.org/finger_banner").text
         regex = re.sub(r"The latest(\s*)", "**", request)

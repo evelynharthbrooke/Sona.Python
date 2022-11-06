@@ -5,7 +5,6 @@ import sys
 import arrow
 import disnake
 import psutil
-from disnake import Intents
 from disnake.ext import commands
 
 try:
@@ -22,9 +21,9 @@ prefixes = config["general"]["bot"]["prefixes"]
 logger = logging.getLogger()
 
 
-class Client(commands.InteractionBot):
+class Client(commands.AutoShardedBot):
     def __init__(self):
-        super().__init__(intents=Intents.all())
+        super().__init__(commands.when_mentioned_or(*prefixes), intents=disnake.Intents.all())
         self.owners = owners
         self.uptime = arrow.now()
         self.process = psutil.Process()
@@ -55,7 +54,7 @@ class Client(commands.InteractionBot):
         logger.info("Total users:        %d", len(set(self.get_all_members())))
         logger.info("Total channels:     %d", len(set(self.get_all_channels())))
         logger.info("Total servers:      %d", len(self.guilds))
-        logger.info("Total commands:     %s", len(self.slash_commands))
+        logger.info("Total commands:     %s", len(self.commands))
         logger.info("Total cogs:         %s", len(self.cogs))
 
     def run(self, *args, **kwargs):
