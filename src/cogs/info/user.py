@@ -8,9 +8,10 @@ from client import Client
 class User(commands.Cog):
     @commands.slash_command()
     async def id(interaction: ApplicationCommandInteraction, member: Member = None):
-        """Retrieves a given user's Discord ID."""
+        """Retrieves the user ID for a given user."""
 
         if member is None:
+            # Default to the message sender if no member is provided.
             member = interaction.author
 
         name = member.name.title()
@@ -29,7 +30,7 @@ class User(commands.Cog):
             return await interaction.response.send_message("This command cannot be used in DMs.")
 
         if member is None:
-            # if a Member is not passed, default to the member who sent the command.
+            # Default to the message sender if no member is provided.
             member = interaction.author
 
         if member.bot:
@@ -42,7 +43,12 @@ class User(commands.Cog):
             title = activity.title
             artist = activity.artist
             album = activity.album
-            message = f"**{name}** is listening to **{title}** by **{artist}** on **{album}**."
+
+            if member is interaction.author:
+                message = f"You are listening to **{title}** by **{artist}** on **{album}**."
+            else:
+                message = f"**{name}** is listening to **{title}** by **{artist}** on **{album}**."
+
             return await interaction.response.send_message(message)
 
         await interaction.response.send_message(f"**{name}** is not listening to anything.")
