@@ -21,11 +21,9 @@ class User(commands.Cog):
 
         if isinstance(interaction.channel, PartialMessageable):
             return await interaction.response.send_message("This command cannot be used in DMs.")
-
-        if member is None:
+        elif member is None:
             member = interaction.author
-
-        if member.bot:
+        elif member.bot:
             return await interaction.response.send_message("Bots can't listen to music, silly.")
 
         name = member.name.title()
