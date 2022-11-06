@@ -7,13 +7,19 @@ from client import Client
 
 class User(commands.Cog):
     @commands.slash_command()
-    async def id(interaction: ApplicationCommandInteraction):
-        """Retrieves the message author's user ID."""
+    async def id(interaction: ApplicationCommandInteraction, member: Member = None):
+        """Retrieves a given user's Discord ID."""
 
-        name = interaction.author.name.title()
-        id = interaction.author.id
+        if member is None:
+            member = interaction.author
 
-        await interaction.response.send_message(f"Hello **{name}**, your user ID is `{id}`.")
+        name = member.name.title()
+        id = member.id
+
+        if member is interaction.author:
+            return await interaction.response.send_message(f"Hello **{name}**, your user ID is _{id}_.")
+
+        await interaction.response.send_message(f"The user ID for **{name}** is _{id}_.")
 
     @commands.slash_command()
     async def status(interaction: ApplicationCommandInteraction, member: Member = None):
@@ -21,9 +27,12 @@ class User(commands.Cog):
 
         if isinstance(interaction.channel, PartialMessageable):
             return await interaction.response.send_message("This command cannot be used in DMs.")
-        elif member is None:
+
+        if member is None:
+            # if a Member is not passed, default to the member who sent the command.
             member = interaction.author
-        elif member.bot:
+
+        if member.bot:
             return await interaction.response.send_message("Bots can't listen to music, silly.")
 
         name = member.name.title()
