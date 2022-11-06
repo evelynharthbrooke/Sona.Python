@@ -6,7 +6,7 @@ import subprocess
 
 from disnake.ext.commands import Context
 
-if platform.system() == "Windows":
+if platform.system() == "Windows" | platform.system() == "win32":
     import winreg
 
 
@@ -20,7 +20,7 @@ async def retrieve_cpu_name(context: Context):
             return processor_brand
         except FileNotFoundError:
             logging.error("The specified registry key could not be located in the registry.")
-            await context.send("Sorry, the system command occurred an error. Try again later!")
+            await context.channel.send("Sorry, the system command occurred an error. Try again later!")
             return None
     elif platform.system() == "Darwin":
         os.environ["PATH"] = os.environ["PATH"] + os.pathsep + "/usr/sbin"
@@ -30,4 +30,4 @@ async def retrieve_cpu_name(context: Context):
         for line in output.decode("utf-8").split("\n"):
             if "model name" in line:
                 return re.sub(".*model name.*:", "", line, 1)
-    return ""
+    return None
