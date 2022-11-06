@@ -2,20 +2,20 @@ import platform
 
 import arrow
 import psutil
-from disnake import Color, Embed
+from disnake import ApplicationCommandInteraction, Color, Embed
 from disnake import __version__ as disnake_version
-from disnake.ext.commands import Cog, Context, command
+from disnake.ext import commands
 
 from client import Client
 from constants import hash, version
 
 
-class Information(Cog):
+class Information(commands.Cog):
     def __init__(self, bot: Client):
         self.bot = bot
 
-    @command("about", aliases=["info"])
-    async def about(self, context: Context):
+    @commands.slash_command()
+    async def about(self, interaction: ApplicationCommandInteraction):
         """Retrieves information about the bot."""
 
         avatar_url = self.bot.user.avatar.url
@@ -26,7 +26,7 @@ class Information(Cog):
 
         python = platform.python_version()
 
-        commands = len(self.bot.commands)
+        commands = len(self.bot.slash_commands)
         cogs = len(self.bot.cogs)
 
         embed = Embed(color=Color.blurple())
@@ -36,10 +36,10 @@ class Information(Cog):
         embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
         embed.set_footer(text=f"{name} user ID: {self.bot.user.id}")
 
-        await context.channel.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @command("system", aliases=["sys"])
-    async def system(self, context: Context):
+    @commands.slash_command()
+    async def system(self, interaction: ApplicationCommandInteraction):
         """Gets information about the host system."""
         avatar_url = self.bot.user.avatar.url
         name = self.bot.user.name
@@ -72,7 +72,7 @@ class Information(Cog):
         embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
-        await context.channel.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: Client):
