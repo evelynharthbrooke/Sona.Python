@@ -30,6 +30,7 @@ class Client(commands.AutoShardedBot):
         self.database = None
         self.prefixes = {}
 
+    logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler(sys.stdout))
 
     async def is_owner(self, user):
@@ -54,11 +55,12 @@ class Client(commands.AutoShardedBot):
         logger.info("Total users:        %d", len(set(self.get_all_members())))
         logger.info("Total channels:     %d", len(set(self.get_all_channels())))
         logger.info("Total servers:      %d", len(self.guilds))
-        logger.info("Total commands:     %s", len(self.commands))
+        logger.info("Total commands:     %s", len(self.slash_commands))
         logger.info("Total cogs:         %s", len(self.cogs))
 
     def run(self, *args, **kwargs):
-        self.load_extension("cogs.info.information")
         self.load_extension("cogs.info.user")
         self.load_extension("cogs.misc.network")
+        self.load_extension("cogs.misc.system")
+        self.load_extension("cogs.misc.utilities")
         return super().run(*args, **kwargs)

@@ -10,7 +10,7 @@ from client import Client
 from constants import hash, version
 
 
-class Information(commands.Cog):
+class System(commands.Cog):
     def __init__(self, bot: Client):
         self.bot = bot
 
@@ -41,15 +41,14 @@ class Information(commands.Cog):
     @commands.slash_command()
     async def system(self, interaction: ApplicationCommandInteraction):
         """Gets information about the host system."""
-        avatar_url = self.bot.user.avatar.url
         name = self.bot.user.name
+        avatar = self.bot.user.avatar.url
 
         cores = psutil.cpu_count(logical=False)
         threads = psutil.cpu_count(logical=True)
         load = f"{psutil.cpu_percent(interval=0.1)}%"
         freq = f"{psutil.cpu_freq(False).current / 1000}"
 
-        arch = platform.machine()
         uptime = arrow.get(psutil.boot_time()).humanize()
 
         mem_total = round(psutil.virtual_memory().total / 1048576)
@@ -63,10 +62,10 @@ class Information(commands.Cog):
 
         embed = Embed(color=Color.blurple())
         embed.description = f"Information about {name}'s host system."
-        embed.set_author(name=f"{name} System Statistics", icon_url=avatar_url)
+        embed.set_author(name=f"{name} System Statistics", icon_url=avatar)
         embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq} GHz")
         embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**System:**__", value=f"**Started:** {uptime}\n**Type:** {arch}")
+        embed.add_field("__**System:**__", value=f"**Started:** {uptime}")
         embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total} MiB\n**Used:** {mem_used} MiB\n**Free:** {mem_free} MiB")
         embed.add_field("\u200B", "\u200B")
         embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
@@ -76,4 +75,4 @@ class Information(commands.Cog):
 
 
 def setup(bot: Client):
-    bot.add_cog(Information(bot))
+    bot.add_cog(System(bot))

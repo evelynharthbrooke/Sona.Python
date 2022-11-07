@@ -1,9 +1,3 @@
 {
-    "python.autoComplete.extraPaths": [
-        "./src"
-    ],
-    "python.analysis.extraPaths": [
-        "./src"
-    ],
     "python.formatting.provider": "black"
 }
