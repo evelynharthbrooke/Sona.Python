@@ -1,4 +1,4 @@
-from disnake import ApplicationCommandInteraction, PartialMessageable, Member, Spotify
+from disnake import ApplicationCommandInteraction, Member, Spotify
 from disnake.ext import commands
 
 from client import Client
