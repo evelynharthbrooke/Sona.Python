@@ -11,11 +11,8 @@ class Service(int, Enum):
     GitLab = 1
 
 class Utilities(commands.Cog):
-    def __init__(self, bot: Client) -> None:
-        self.bot = bot
-
     @commands.slash_command()
-    async def source(self, interaction: ApplicationCommandInteraction, service: Service = Service.GitHub) -> None:
+    async def source(interaction: ApplicationCommandInteraction, service: Service = Service.GitHub) -> None:
         """Retrieves a link to the bot's GitHub repository."""
 
         if service == Service.GitHub:
