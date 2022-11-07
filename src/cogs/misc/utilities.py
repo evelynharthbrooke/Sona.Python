@@ -11,9 +11,11 @@ class Service(int, Enum):
     GitLab = 1
 
 class Utilities(commands.Cog):
+    """Miscellaneous commands that don't belong in other cogs."""
+
     @commands.slash_command()
     async def source(interaction: ApplicationCommandInteraction, service: Service = Service.GitHub) -> None:
-        """Retrieves a link to the bot's GitHub repository."""
+        """Retrieves a link to the bot's repository on either GitHub or GitLab."""
 
         if service == Service.GitHub:
             repository = "https://github.com/evelynmarie/Sona"
