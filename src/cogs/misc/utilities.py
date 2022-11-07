@@ -5,10 +5,11 @@ from disnake.ext import commands
 
 from client import Client
 
+
 class Service(int, Enum):
-    """The service to fetch the git repository from."""
     GitHub = 0
     GitLab = 1
+
 
 class Utilities(commands.Cog):
     """Miscellaneous commands that don't belong in other cogs."""
@@ -23,6 +24,7 @@ class Utilities(commands.Cog):
             repository = "https://gitlab.com/evelynmarie/Sona"
 
         await interaction.response.send_message(f"You can view Sona's git repository here: <{repository}>")
+
 
 def setup(bot: Client):
     bot.add_cog(Utilities(bot))

@@ -21,12 +21,9 @@ class User(commands.Cog):
 
         await interaction.response.send_message(f"The user ID for **{name}** is _{id}_.")
 
-    @commands.slash_command()
+    @commands.slash_command(dm_permission=False)
     async def status(interaction: ApplicationCommandInteraction, member: Member = None) -> None:
         """Retrieves a given user's Spotify status."""
-
-        if isinstance(interaction.channel, PartialMessageable):
-            return await interaction.response.send_message("This command cannot be used from DMs.")
 
         if member is None:
             # Default to the message sender if no member is provided.
