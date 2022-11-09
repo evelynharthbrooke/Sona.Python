@@ -8,19 +8,19 @@ class Github(commands.Cog):
     """A set of commands for interacting with the GitHub API."""
 
     @commands.slash_command()
-    async def github(self, interaction: ApplicationCommandInteraction) -> None:
+    async def github(self, inter: ApplicationCommandInteraction) -> None:
         pass
 
     @github.sub_command()
-    async def user(self, interaction: ApplicationCommandInteraction) -> None:
+    async def user(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub user."""
-        await interaction.response.send_message("This command is a work in progress.")
+        await inter.response.send_message("This command is a work in progress.")
         pass
 
     @github.sub_command()
-    async def repository(self, interaction: ApplicationCommandInteraction) -> None:
+    async def repository(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub repository."""
-        await interaction.response.send_message("This command is a work in progress.")
+        await inter.response.send_message("This command is a work in progress.")
         pass
 
 

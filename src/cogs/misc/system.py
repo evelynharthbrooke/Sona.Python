@@ -11,7 +11,7 @@ class System(commands.Cog):
         self.client = client
 
     @commands.slash_command()
-    async def system(self, interaction: ApplicationCommandInteraction):
+    async def system(self, inter: ApplicationCommandInteraction):
         """Gets information about the host system."""
 
         name = self.client.user.name
@@ -44,7 +44,7 @@ class System(commands.Cog):
         embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
-        await interaction.response.send_message(embed=embed)
+        await inter.response.send_message(embed=embed)
         pass
 
 

@@ -19,7 +19,7 @@ class Bot(commands.Cog):
         pass
 
     @bot.sub_command()
-    async def about(self, interaction: ApplicationCommandInteraction) -> None:
+    async def about(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves information about the bot."""
 
         avatar_url = self.client.user.avatar.url
@@ -38,14 +38,14 @@ class Bot(commands.Cog):
         embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
-        await interaction.response.send_message(embed=embed)
+        await inter.response.send_message(embed=embed)
         pass
 
     @bot.sub_command()
-    async def source(self, interaction: ApplicationCommandInteraction) -> None:
+    async def source(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
 
-        await interaction.response.send_message(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
+        await inter.response.send_message(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
         pass
 
 
