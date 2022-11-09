@@ -39,12 +39,12 @@ class User(commands.Cog):
         name = member.name
 
         join_date = arrow.get(member.created_at).format("MMMM D, YYYY")
-        join_date_humanized = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
+        humanized_join_date = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
 
         if member is interaction.author:
-            return await interaction.response.send_message(f"You joined Discord on {join_date}, or _{join_date_humanized}_.")
+            return await interaction.response.send_message(f"You joined Discord on {join_date}, or _{humanized_join_date}_.")
 
-        await interaction.response.send_message(f"**{name}** joined Discord on {join_date}, or _{join_date_humanized}_.")
+        await interaction.response.send_message(f"**{name}** joined Discord on {join_date}, or _{humanized_join_date}_.")
 
 
 def setup(client: Client):
