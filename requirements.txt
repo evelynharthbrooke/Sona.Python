@@ -2,4 +2,5 @@ arrow               # Nice date & time formatting library
 disnake[voice]      # Extensive Python library used to interact with the Discord API.
 psutil              # Used to get various system information
 requests            # Used for HTTP requests
+spotipy             # A neat library for interacting with the Spotify Web API.
 tomli               # Used for the configuration system

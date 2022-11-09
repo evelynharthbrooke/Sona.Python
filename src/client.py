@@ -6,6 +6,8 @@ import arrow
 import disnake
 import psutil
 from disnake.ext import commands
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyClientCredentials
 
 try:
     import tomllib
@@ -15,7 +17,10 @@ except ModuleNotFoundError:
 with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
-owners = config["general"]["bot"]["owners"]
+owners = config["general"]["owners"]
+
+sp_client_id = config["network"]["spotify"]["client_id"]
+sp_client_secret = config["network"]["spotify"]["client_secret"]
 
 logger = logging.getLogger()
 
@@ -26,7 +31,7 @@ class Client(commands.AutoShardedInteractionBot):
         self.owners = owners
         self.uptime = arrow.now()
         self.process = psutil.Process()
-        self.database = None
+        self.spotify = Spotify(auth_manager=SpotifyClientCredentials(client_id=sp_client_id, client_secret=sp_client_secret))
 
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler(sys.stdout))

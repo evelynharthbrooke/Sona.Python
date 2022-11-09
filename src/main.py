@@ -9,7 +9,7 @@ with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
 
-token = config["general"]["api"]["token"]
+token = config["general"]["token"]
 
 bot = Client()
 
