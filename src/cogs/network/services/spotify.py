@@ -61,7 +61,7 @@ class Spotify(commands.Cog):
         album_id = album["id"]
         album_name = album["name"]
         released = arrow.get(album["release_date"]).format("MMM D, YYYY")
-        type = "Exended Play (EP)" if len(tracks["items"]) > 1 and len(tracks["items"]) <= 6 else album["album_type"].title()
+        type = album["album_type"].title() if len(tracks["items"]) <= 1 or len(tracks["items"]) >= 6 else "Extended Play (EP)"
         artists = list()
         tracklist = list()
         duration: int = 0
