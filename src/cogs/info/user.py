@@ -14,7 +14,7 @@ class User(commands.Cog):
         pass
 
     @user.sub_command()
-    async def id(interaction: ApplicationCommandInteraction, member: Member = None) -> None:
+    async def id(self, interaction: ApplicationCommandInteraction, member: Member = None) -> None:
         """Retrieves a user's account ID. Defaults to your own account."""
 
         if member is None:
