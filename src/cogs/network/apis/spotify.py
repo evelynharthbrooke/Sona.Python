@@ -103,7 +103,6 @@ class Spotify(commands.Cog):
                 embed.insert_field_at(5, name="\u200B", value="\u200B", inline=True)
                 pass
 
-
             embed.set_footer(text="Powered by the Spotify Web API.")
 
             return await inter.send(embed=embed)
