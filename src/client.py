@@ -16,19 +16,17 @@ with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
 owners = config["general"]["bot"]["owners"]
-prefixes = config["general"]["bot"]["prefixes"]
 
 logger = logging.getLogger()
 
 
-class Client(commands.AutoShardedBot):
+class Client(commands.AutoShardedInteractionBot):
     def __init__(self):
-        super().__init__(commands.when_mentioned_or(*prefixes), intents=disnake.Intents.all())
+        super().__init__(intents=disnake.Intents.all())
         self.owners = owners
         self.uptime = arrow.now()
         self.process = psutil.Process()
         self.database = None
-        self.prefixes = {}
 
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -63,4 +61,6 @@ class Client(commands.AutoShardedBot):
         self.load_extension("cogs.misc.network")
         self.load_extension("cogs.misc.system")
         self.load_extension("cogs.misc.utilities")
+        self.load_extension("cogs.network.apis.github")
+        self.load_extension("cogs.network.apis.spotify")
         return super().run(*args, **kwargs)

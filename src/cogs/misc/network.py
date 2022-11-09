@@ -11,7 +11,7 @@ class Network(commands.Cog):
     """Commands that interface with web services & APIs."""
 
     @commands.slash_command()
-    async def kernel(interaction: ApplicationCommandInteraction):
+    async def kernel(self, interaction: ApplicationCommandInteraction):
         """Retrieves the latest available Linux kernel versions."""
 
         request = requests.get("https://www.kernel.org/finger_banner").text
@@ -23,5 +23,5 @@ class Network(commands.Cog):
         await interaction.response.send_message(message)
 
 
-def setup(bot: Client):
-    bot.add_cog(Network(bot))
+def setup(client: Client):
+    client.add_cog(Network(client))

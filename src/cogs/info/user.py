@@ -21,34 +21,6 @@ class User(commands.Cog):
 
         await interaction.response.send_message(f"The user ID for **{name}** is _{id}_.")
 
-    @commands.slash_command(dm_permission=False)
-    async def status(interaction: ApplicationCommandInteraction, member: Member = None) -> None:
-        """Retrieves a given user's Spotify status."""
 
-        if member is None:
-            # Default to the message sender if no member is provided.
-            member = interaction.author
-
-        if member.bot:
-            return await interaction.response.send_message("Bots can't listen to music, silly.")
-
-        name = member.name.title()
-        activity = member.activity
-
-        if isinstance(activity, Spotify):
-            title = activity.title
-            artist = activity.artist
-            album = activity.album
-
-            if member is interaction.author:
-                message = f"You are listening to **{title}** by **{artist}** on **{album}**."
-            else:
-                message = f"**{name}** is listening to **{title}** by **{artist}** on **{album}**."
-
-            return await interaction.response.send_message(message)
-
-        await interaction.response.send_message(f"**{name}** is not listening to anything.")
-
-
-def setup(bot: Client):
-    bot.add_cog(User(bot))
+def setup(client: Client):
+    client.add_cog(User(client))

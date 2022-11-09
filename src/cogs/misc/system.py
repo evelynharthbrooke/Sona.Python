@@ -11,38 +11,37 @@ from constants import hash, version
 
 
 class System(commands.Cog):
-    def __init__(self, bot: Client):
-        self.bot = bot
+    def __init__(self, client: Client):
+        self.client = client
 
     @commands.slash_command()
     async def about(self, interaction: ApplicationCommandInteraction):
         """Retrieves information about the bot."""
 
-        avatar_url = self.bot.user.avatar.url
-        name = self.bot.user.name
-        users = len(self.bot.users)
-        guilds = len(self.bot.guilds)
-        uptime = self.bot.uptime.humanize()
-
+        avatar_url = self.client.user.avatar.url
+        name = self.client.user.name
+        users = len(self.client.users)
+        guilds = len(self.client.guilds)
+        uptime = self.client.uptime.humanize()
         python = platform.python_version()
-
-        commands = len(self.bot.slash_commands)
-        cogs = len(self.bot.cogs)
+        commands = len(self.client.slash_commands)
+        cogs = len(self.client.cogs)
 
         embed = Embed(color=Color.blurple())
         embed.set_author(name=name, icon_url=avatar_url)
         embed.add_field("__**Basic Info:**__", f"**Started:** {uptime}\n**Version:** {version} (rev. {hash})\n**Users:** {users}\n**Guilds:** {guilds}")
         embed.add_field("\u200B", "\u200B")
         embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
-        embed.set_footer(text=f"{name} user ID: {self.bot.user.id}")
+        embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
         await interaction.response.send_message(embed=embed)
 
     @commands.slash_command()
     async def system(self, interaction: ApplicationCommandInteraction):
         """Gets information about the host system."""
-        name = self.bot.user.name
-        avatar = self.bot.user.avatar.url
+
+        name = self.client.user.name
+        avatar = self.client.user.avatar.url
 
         cores = psutil.cpu_count(logical=False)
         threads = psutil.cpu_count(logical=True)
@@ -55,10 +54,10 @@ class System(commands.Cog):
         mem_used = round(psutil.virtual_memory().used / 1048576)
         mem_free = round(psutil.virtual_memory().free / 1048576)
 
-        proc_threads = self.bot.process.num_threads()
-        proc_load = round(self.bot.process.cpu_percent())
-        proc_mem = round(self.bot.process.memory_full_info().rss / 1048576)
-        proc_id = self.bot.process.pid
+        proc_threads = self.client.process.num_threads()
+        proc_load = round(self.client.process.cpu_percent())
+        proc_mem = round(self.client.process.memory_full_info().rss / 1048576)
+        proc_id = self.client.process.pid
 
         embed = Embed(color=Color.blurple())
         embed.description = f"Information about {name}'s host system."
@@ -74,5 +73,5 @@ class System(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 
-def setup(bot: Client):
-    bot.add_cog(System(bot))
+def setup(client: Client):
+    client.add_cog(System(client))
