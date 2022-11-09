@@ -32,10 +32,10 @@ class Spotify(commands.Cog):
         market: The region to be searched, as a two-character country code. Optional.
         """
 
-        if id is not None:
+        if id is not None and album is None:
             album = self.client.spotify.album(id, market)
             tracks = self.client.spotify.album_tracks(id, market=market)
-        elif album is not None:
+        elif album is not None and id is None:
             if artist is not None and year is None:
                 search_string = f"album: {album} artist: {artist}"
             elif artist is None and year is not None:
