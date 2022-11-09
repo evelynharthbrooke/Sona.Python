@@ -15,13 +15,13 @@ class Github(commands.Cog):
     @github.sub_command()
     async def user(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub user."""
-        await inter.response.send_message("This command is a work in progress.")
+        await inter.send("This command is a work in progress.")
         pass
 
     @github.sub_command()
     async def repository(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub repository."""
-        await inter.response.send_message("This command is a work in progress.")
+        await inter.send("This command is a work in progress.")
         pass
 
 

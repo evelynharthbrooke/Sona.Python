@@ -20,7 +20,7 @@ class Network(commands.Cog):
         versions = "\n".join(version for version in regex_b[:-1])
         message = f"**__Available Linux Kernel Versions:__**\n\n{versions}"
 
-        await inter.response.send_message(message)
+        await inter.send(message)
         pass
 
 

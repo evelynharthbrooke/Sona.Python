@@ -25,9 +25,9 @@ class User(commands.Cog):
         id = member.id
 
         if member is inter.author:
-            return await inter.response.send_message(f"Hello **{name}**, your user ID is _{id}_.")
+            return await inter.send(f"Hello **{name}**, your user ID is _{id}_.")
 
-        await inter.response.send_message(f"The user ID for **{name}** is _{id}_.")
+        await inter.send(f"The user ID for **{name}** is _{id}_.")
         pass
 
     @user.sub_command()
@@ -43,9 +43,9 @@ class User(commands.Cog):
         humanized_join_date = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
 
         if member is inter.author:
-            return await inter.response.send_message(f"You joined Discord on {join_date}, or _{humanized_join_date}_.")
+            return await inter.send(f"You joined Discord on {join_date}, or _{humanized_join_date}_.")
 
-        await inter.response.send_message(f"**{name}** joined Discord on {join_date}, or _{humanized_join_date}_.")
+        await inter.send(f"**{name}** joined Discord on {join_date}, or _{humanized_join_date}_.")
         pass
 
 

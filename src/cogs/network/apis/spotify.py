@@ -22,12 +22,12 @@ class Spotify(commands.Cog):
             # due to the way discord activities work, they cannot be accessed from direct
             # messages for some reason, so disallow the command from being used in guilds
             # to avoid it breaking.
-            return await inter.response.send_message("This command cannot be used from DMs.")
+            return await inter.send("This command cannot be used from DMs.")
 
         if member is None:
             member = inter.author
         elif member.bot:
-            return await inter.response.send_message("Bots can't listen to music, silly.")
+            return await inter.send("Bots can't listen to music, silly.")
 
         name = member.name.title()
         activity = member.activity
@@ -42,12 +42,12 @@ class Spotify(commands.Cog):
             else:
                 message = f"**{name}** is currently listening to **{title}** by **{artist}** on **{album}**."
 
-            return await inter.response.send_message(message)
+            return await inter.send(message)
 
         if member is inter.author:
-            return await inter.response.send_message("You aren't currently istening to anything.")
+            return await inter.send("You aren't currently istening to anything.")
 
-        await inter.response.send_message(f"**{name}** isn't currently listening to anything.")
+        await inter.send(f"**{name}** isn't currently listening to anything.")
         pass
 
 

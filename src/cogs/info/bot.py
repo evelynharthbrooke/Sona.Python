@@ -43,7 +43,7 @@ class Bot(commands.Cog):
         embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
-        await inter.response.send_message(embed=embed)
+        await inter.send(embed=embed)
         pass
 
     @bot.sub_command()
@@ -56,38 +56,38 @@ class Bot(commands.Cog):
         cores = psutil.cpu_count(logical=False)
         threads = psutil.cpu_count(logical=True)
         load = f"{psutil.cpu_percent(interval=0.1)}%"
-        freq = f"{psutil.cpu_freq(False).current / 1000}"
+        freq = f"{psutil.cpu_freq(False).current / 1000} GHz"
 
         uptime = arrow.get(psutil.boot_time()).humanize()
 
-        mem_total = round(psutil.virtual_memory().total / 1048576)
-        mem_used = round(psutil.virtual_memory().used / 1048576)
-        mem_free = round(psutil.virtual_memory().free / 1048576)
+        mem_total = f"{round(psutil.virtual_memory().total / 1048576)} MiB"
+        mem_used = f"{round(psutil.virtual_memory().used / 1048576)} MiB"
+        mem_free = f"{round(psutil.virtual_memory().free / 1048576)} MiB"
 
         proc_threads = self.client.process.num_threads()
-        proc_load = round(self.client.process.cpu_percent())
-        proc_mem = round(self.client.process.memory_full_info().rss / 1048576)
+        proc_load = f"{round(self.client.process.cpu_percent())}%"
+        proc_mem = f"{round(self.client.process.memory_full_info().rss / 1048576)} MiB"
         proc_id = self.client.process.pid
 
         embed = Embed(color=Color.blurple())
         embed.description = f"Information about {name}'s host system."
         embed.set_author(name=f"{name} System Statistics", icon_url=avatar)
-        embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq} GHz")
+        embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq}")
         embed.add_field("\u200B", "\u200B")
         embed.add_field("__**System:**__", value=f"**Started:** {uptime}")
-        embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total} MiB\n**Used:** {mem_used} MiB\n**Free:** {mem_free} MiB")
+        embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total}\n**Used:** {mem_used}\n**Free:** {mem_free}")
         embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
+        embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem}\n**Threads:** {proc_threads}\n**CPU:** {proc_load}")
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
-        await inter.response.send_message(embed=embed)
+        await inter.send(embed=embed)
         pass
 
     @bot.sub_command()
     async def source(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
 
-        await inter.response.send_message(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
+        await inter.send(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
         pass
 
 
