@@ -1,6 +1,6 @@
 import platform
 
-from disnake import ApplicationCommandInteraction, Embed, Color
+from disnake import ApplicationCommandInteraction, Color, Embed
 from disnake import __version__ as disnake_version
 from disnake.ext import commands
 
@@ -44,6 +44,7 @@ class Bot(commands.Cog):
     async def source(self, interaction: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
         await interaction.response.send_message(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
+
 
 def setup(client: Client):
     client.add_cog(Bot(client))

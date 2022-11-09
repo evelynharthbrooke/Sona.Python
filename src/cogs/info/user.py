@@ -1,3 +1,4 @@
+import arrow
 from disnake import ApplicationCommandInteraction, Member
 from disnake.ext import commands
 
@@ -27,6 +28,23 @@ class User(commands.Cog):
             return await interaction.response.send_message(f"Hello **{name}**, your user ID is _{id}_.")
 
         await interaction.response.send_message(f"The user ID for **{name}** is _{id}_.")
+
+    @user.sub_command()
+    async def age(self, interaction: ApplicationCommandInteraction, member: Member = None) -> None:
+        """Retrieves a user's account age. Defaults to your own account."""
+
+        if member is None:
+            member = interaction.author
+
+        name = member.name
+
+        join_date = arrow.get(member.created_at).format("MMMM D, YYYY")
+        join_date_humanized = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
+
+        if member is interaction.author:
+            return await interaction.response.send_message(f"You joined Discord on {join_date}, or _{join_date_humanized}_.")
+
+        await interaction.response.send_message(f"**{name}** joined Discord on {join_date}, or _{join_date_humanized}_.")
 
 
 def setup(client: Client):
