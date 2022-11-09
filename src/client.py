@@ -65,6 +65,6 @@ class Client(commands.AutoShardedInteractionBot):
         self.load_extension("cogs.info.bot")
         self.load_extension("cogs.info.user")
         self.load_extension("cogs.misc.network")
-        self.load_extension("cogs.network.apis.github")
-        self.load_extension("cogs.network.apis.spotify")
+        self.load_extension("cogs.network.services.github")
+        self.load_extension("cogs.network.services.spotify")
         return super().run(*args, **kwargs)

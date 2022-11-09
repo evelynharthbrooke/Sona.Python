@@ -54,7 +54,7 @@ class Spotify(commands.Cog):
             else:
                 return await inter.send("No albums were found matching this criteria.")
         elif name is not None and id is not None:
-            return await inter.send("You cannot provide both an album name and album id!")
+            return await inter.send("You cannot provide both an album name and album id.")
         else:
             await inter.send("Please provide either an album name or album id.")
 
