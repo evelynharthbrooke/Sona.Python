@@ -15,7 +15,8 @@ class Bot(commands.Cog):
         self.client = client
 
     @commands.slash_command()
-    async def bot(self, _: ApplicationCommandInteraction) -> None:
+    async def bot(self, inter: ApplicationCommandInteraction) -> None:
+        del inter
         pass
 
     @bot.sub_command()

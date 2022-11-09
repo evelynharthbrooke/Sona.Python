@@ -9,6 +9,7 @@ class Github(commands.Cog):
 
     @commands.slash_command()
     async def github(self, inter: ApplicationCommandInteraction) -> None:
+        del inter
         pass
 
     @github.sub_command()

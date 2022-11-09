@@ -9,8 +9,9 @@ class User(commands.Cog):
     """A set of commands for interacting with users."""
 
     @commands.slash_command()
-    async def user(self, _: ApplicationCommandInteraction) -> None:
+    async def user(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieve information about users."""
+        del inter
         pass
 
     @user.sub_command()
