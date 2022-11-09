@@ -1,40 +1,14 @@
-import platform
-
 import arrow
 import psutil
 from disnake import ApplicationCommandInteraction, Color, Embed
-from disnake import __version__ as disnake_version
 from disnake.ext import commands
 
 from client import Client
-from constants import hash, version
 
 
 class System(commands.Cog):
     def __init__(self, client: Client):
         self.client = client
-
-    @commands.slash_command()
-    async def about(self, interaction: ApplicationCommandInteraction):
-        """Retrieves information about the bot."""
-
-        avatar_url = self.client.user.avatar.url
-        name = self.client.user.name
-        users = len(self.client.users)
-        guilds = len(self.client.guilds)
-        uptime = self.client.uptime.humanize()
-        python = platform.python_version()
-        commands = len(self.client.slash_commands)
-        cogs = len(self.client.cogs)
-
-        embed = Embed(color=Color.blurple())
-        embed.set_author(name=name, icon_url=avatar_url)
-        embed.add_field("__**Basic Info:**__", f"**Started:** {uptime}\n**Version:** {version} (rev. {hash})\n**Users:** {users}\n**Guilds:** {guilds}")
-        embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
-        embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
-
-        await interaction.response.send_message(embed=embed)
 
     @commands.slash_command()
     async def system(self, interaction: ApplicationCommandInteraction):

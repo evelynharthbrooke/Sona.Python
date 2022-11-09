@@ -57,10 +57,10 @@ class Client(commands.AutoShardedInteractionBot):
         logger.info("Total cogs:         %s", len(self.cogs))
 
     def run(self, *args, **kwargs):
+        self.load_extension("cogs.info.bot")
         self.load_extension("cogs.info.user")
         self.load_extension("cogs.misc.network")
         self.load_extension("cogs.misc.system")
-        self.load_extension("cogs.misc.utilities")
         self.load_extension("cogs.network.apis.github")
         self.load_extension("cogs.network.apis.spotify")
         return super().run(*args, **kwargs)

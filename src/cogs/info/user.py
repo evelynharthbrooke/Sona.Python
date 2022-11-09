@@ -1,11 +1,18 @@
-from disnake import ApplicationCommandInteraction, Member, Spotify
+from disnake import ApplicationCommandInteraction, Member
 from disnake.ext import commands
 
 from client import Client
 
 
 class User(commands.Cog):
+    """A set of commands for interacting with users."""
+
     @commands.slash_command()
+    async def user(self, _: ApplicationCommandInteraction) -> None:
+        """Retrieve information about users."""
+        pass
+
+    @user.sub_command()
     async def id(interaction: ApplicationCommandInteraction, member: Member = None) -> None:
         """Retrieves the user ID for a given user."""
 

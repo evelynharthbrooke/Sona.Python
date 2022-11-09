@@ -18,6 +18,9 @@ class Spotify(commands.Cog):
         """Retrieves a given user's Spotify status. Defaults to your own."""
 
         if interaction.guild_id is None:
+            # due to the way discord activities work, they cannot be accessed from direct
+            # messages for some reason, so disallow the command from being used in guilds
+            # to avoid it breaking.
             return await interaction.response.send_message("This command cannot be used from DMs.")
 
         if member is None:
