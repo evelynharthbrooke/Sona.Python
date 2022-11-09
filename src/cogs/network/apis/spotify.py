@@ -1,7 +1,6 @@
 import arrow
 import disnake
 from disnake import ApplicationCommandInteraction, Member
-from disnake.types.embed import EmbedField
 from disnake.ext import commands
 
 from client import Client
