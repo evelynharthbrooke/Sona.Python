@@ -1,5 +1,7 @@
 import platform
 
+import arrow
+import psutil
 from disnake import ApplicationCommandInteraction, Color, Embed
 from disnake import __version__ as disnake_version
 from disnake.ext import commands
@@ -25,9 +27,11 @@ class Bot(commands.Cog):
 
         avatar_url = self.client.user.avatar.url
         name = self.client.user.name
+
         users = len(self.client.users)
         guilds = len(self.client.guilds)
         uptime = self.client.uptime.humanize()
+
         python = platform.python_version()
         commands = len(self.client.slash_commands)
         cogs = len(self.client.cogs)
@@ -38,6 +42,43 @@ class Bot(commands.Cog):
         embed.add_field("\u200B", "\u200B")
         embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
+
+        await inter.response.send_message(embed=embed)
+        pass
+
+    @bot.sub_command()
+    async def system(self, inter: ApplicationCommandInteraction):
+        """Gets information about the bot's host system."""
+
+        name = self.client.user.name
+        avatar = self.client.user.avatar.url
+
+        cores = psutil.cpu_count(logical=False)
+        threads = psutil.cpu_count(logical=True)
+        load = f"{psutil.cpu_percent(interval=0.1)}%"
+        freq = f"{psutil.cpu_freq(False).current / 1000}"
+
+        uptime = arrow.get(psutil.boot_time()).humanize()
+
+        mem_total = round(psutil.virtual_memory().total / 1048576)
+        mem_used = round(psutil.virtual_memory().used / 1048576)
+        mem_free = round(psutil.virtual_memory().free / 1048576)
+
+        proc_threads = self.client.process.num_threads()
+        proc_load = round(self.client.process.cpu_percent())
+        proc_mem = round(self.client.process.memory_full_info().rss / 1048576)
+        proc_id = self.client.process.pid
+
+        embed = Embed(color=Color.blurple())
+        embed.description = f"Information about {name}'s host system."
+        embed.set_author(name=f"{name} System Statistics", icon_url=avatar)
+        embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq} GHz")
+        embed.add_field("\u200B", "\u200B")
+        embed.add_field("__**System:**__", value=f"**Started:** {uptime}")
+        embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total} MiB\n**Used:** {mem_used} MiB\n**Free:** {mem_free} MiB")
+        embed.add_field("\u200B", "\u200B")
+        embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem} MiB\n**Threads:** {proc_threads}\n**CPU:** {proc_load}%")
+        embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
         await inter.response.send_message(embed=embed)
         pass

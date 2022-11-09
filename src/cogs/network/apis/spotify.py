@@ -11,6 +11,7 @@ class Spotify(commands.Cog):
     @commands.slash_command()
     async def spotify(self, inter: ApplicationCommandInteraction):
         """Provides access to retrieving data from the Spotify API."""
+        del inter
         pass
 
     @spotify.sub_command()
