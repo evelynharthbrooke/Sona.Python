@@ -102,11 +102,15 @@ class Spotify(commands.Cog):
             embed.add_field("Length", arrow.get(duration).format("m [min] s [sec]"), inline=True)
 
         try:
+            # due to a quirk on the spotify api side, this array is omitted from the response
+            # if the market name is provided, as i guess for some reason spotify doesn't see
+            # a point to providing the array if you're searching for an album in a specific
+            # market.
             embed.add_field("Markets", len(album["available_markets"]), inline=True)
         except KeyError:
-            # insert empty field if we get a key error to avoid running into a
-            # discord bug regarding embeds where if there are only two fields in
-            # a row, the discord client will push the 2nd field to the right.
+            # insert empty field if we get a key error to avoid running into a discord bug
+            # regarding embeds where if there are only two fields in a row, the discord client
+            # will push the 2nd field to the right.
             embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
 
         embed.set_footer(text="Powered by the Spotify Web API.")
