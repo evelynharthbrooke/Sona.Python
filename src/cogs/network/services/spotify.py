@@ -113,7 +113,6 @@ class Spotify(commands.Cog):
 
         await inter.send(embed=embed)
 
-
     @spotify.sub_command()
     async def status(self, inter: Interaction, member: Member = None) -> None:
         """Retrieves a given user's Spotify status. Defaults to your own."""
