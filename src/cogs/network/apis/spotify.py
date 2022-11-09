@@ -44,25 +44,22 @@ class Spotify(commands.Cog):
 
         if len(items) > 0:
             album = self.client.spotify.album(items[0]["id"], market=market)
-            tracks = self.client.spotify.album_tracks(album_id=items[0]["id"], market=market)
+            tracks = self.client.spotify.album_tracks(album_id=items[0]["id"], market=market)["items"]
 
             id = album["id"]
             name = album["name"]
             released = arrow.get(album["release_date"]).format("MMM D, YYYY")
-            type = album["album_type"].title()
+            type = "Exended Play (EP)" if len(tracks) > 1 and len(tracks) <= 6 else album["album_type"].title()
             artists = list()
             tracklist = list()
             duration: int = 0
-
-            if type == "single" and len(tracks["items"]) > 1 and len(tracks["items"]) <= 6:
-                type = "Extended Play (EP)"
 
             for artist in album["artists"]:
                 name = artist["name"]
                 url = artist["external_urls"]["spotify"]
                 artists.append(f"[{name}]({url})")
 
-            for track in tracks["items"]:
+            for track in tracks:
                 title = track["name"]
                 track_number = track["track_number"]
                 url = track["external_urls"]["spotify"]
@@ -70,8 +67,7 @@ class Spotify(commands.Cog):
 
                 if track["duration_ms"] / 1000 > 3600:
                     length = arrow.get((track["duration_ms"]) / 1000).format("h [hr] m [min] s [sec]")
-
-                if track["explicit"]:
+                elif track["explicit"]:
                     tracklist.append(f"**{track_number}**. [{title}]({url}) **E** - {length}")
                 else:
                     tracklist.append(f"**{track_number}**. [{title}]({url}) - {length}")
@@ -98,10 +94,8 @@ class Spotify(commands.Cog):
             except KeyError:
                 # insert empty field if we get a key error to avoid running into a
                 # discord bug regarding embeds where if there are only two fields in
-                # a row, the discord client will push the aforementioned field to the
-                # right.
+                # a row, the discord client will push the 2nd field to the right.
                 embed.insert_field_at(5, name="\u200B", value="\u200B", inline=True)
-                pass
 
             embed.set_footer(text="Powered by the Spotify Web API.")
 
