@@ -96,13 +96,13 @@ class Spotify(commands.Cog):
             try:
                 embed.add_field(name="Markets", value=len(album["available_markets"]), inline=True)
             except KeyError:
-                # if we get a key error, its because the user provided a market,
-                # which removes the available_markets array from the returned album
-                # object for some reason.
+                # insert empty field if we get a key error to avoid running into a
+                # discord bug regarding embeds where if there are only two fields in
+                # a row, the discord client will push the aforementioned field to the
+                # right.
+                embed.insert_field_at(5, name="\u200B", value="\u200B", inline=True)
                 pass
 
-            if len(embed.fields) < 6 and len(embed.fields) <= 5:
-                embed.insert_field_at(4, name="\u200B", value="\u200B", inline=True)
 
             embed.set_footer(text="Powered by the Spotify Web API.")
 
