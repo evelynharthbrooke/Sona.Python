@@ -45,6 +45,7 @@ class System(commands.Cog):
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
         await interaction.response.send_message(embed=embed)
+        pass
 
 
 def setup(client: Client):

@@ -39,12 +39,15 @@ class Bot(commands.Cog):
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
         await interaction.response.send_message(embed=embed)
+        pass
 
     @bot.sub_command()
     async def source(self, interaction: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
         await interaction.response.send_message(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
+        pass
 
 
 def setup(client: Client):
     client.add_cog(Bot(client))
+    pass

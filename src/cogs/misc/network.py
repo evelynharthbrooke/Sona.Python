@@ -21,7 +21,9 @@ class Network(commands.Cog):
         message = f"**__Available Linux Kernel Versions:__**\n\n{versions}"
 
         await interaction.response.send_message(message)
+        pass
 
 
 def setup(client: Client):
     client.add_cog(Network(client))
+    pass

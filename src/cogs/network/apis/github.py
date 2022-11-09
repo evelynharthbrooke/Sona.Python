@@ -15,12 +15,15 @@ class Github(commands.Cog):
     async def user(self, interaction: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub user."""
         await interaction.response.send_message("This command is a work in progress.")
+        pass
 
     @github.sub_command()
     async def repository(self, interaction: ApplicationCommandInteraction) -> None:
         """Retrieves information about a GitHub repository."""
         await interaction.response.send_message("This command is a work in progress.")
+        pass
 
 
 def setup(client: Client):
     client.add_cog(Github(client))
+    pass

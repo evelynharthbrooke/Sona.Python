@@ -47,7 +47,9 @@ class Spotify(commands.Cog):
             return await interaction.response.send_message("You aren't currently istening to anything.")
 
         await interaction.response.send_message(f"**{name}** isn't currently listening to anything.")
+        pass
 
 
 def setup(client: Client):
     client.add_cog(Spotify(client))
+    pass
