@@ -37,31 +37,31 @@ class Spotify(commands.Cog):
             tracks = self.client.spotify.album_tracks(id, market=market)
         elif name is not None and id is None:
             if artist is not None and year is None:
-                search_string = f"album: {name} artist: {artist}"
+                query = f"album: {name} artist: {artist}"
             elif artist is None and year is not None:
-                search_string = f"album: {name} year: {year}"
+                query = f"album: {name} year: {year}"
             elif artist is not None and year is not None:
-                search_string = f"album: {name} artist: {artist} year: {year}"
+                query = f"album: {name} artist: {artist} year: {year}"
             else:
-                search_string = f"album: {name}"
+                query = f"album: {name}"
 
-            results = self.client.spotify.search(search_string, 1, 0, "album", market)
+            results = self.client.spotify.search(query, 1, 0, "album", market)
             items = results["albums"]["items"]
 
             if len(items) > 0:
                 album = self.client.spotify.album(items[0]["id"], market)
-                tracks = self.client.spotify.album_tracks(items[0]["id"], market=market)
+                tracks = self.client.spotify.album_tracks(album["id"], market=market)["items"]
             else:
                 return await inter.send("No albums were found matching this criteria.")
         elif name is not None and id is not None:
             return await inter.send("You cannot provide both an album name and album id.")
         else:
-            await inter.send("Please provide either an album name or album id.")
+            return await inter.send("Please provide either an album name or album id.")
 
         album_id = album["id"]
         album_name = album["name"]
         released = arrow.get(album["release_date"]).format("MMM D, YYYY")
-        type = album["album_type"].title() if len(tracks["items"]) <= 1 or len(tracks["items"]) >= 6 else "Extended Play (EP)"
+        type = album["album_type"].title() if len(tracks) <= 1 or len(tracks) >= 6 else "Extended Play (EP)"
         artists = list()
         tracklist = list()
         duration: int = 0
@@ -71,18 +71,17 @@ class Spotify(commands.Cog):
             artist_url = artist["external_urls"]["spotify"]
             artists.append(f"[{artist_name}]({artist_url})")
 
-        for track in tracks["items"]:
+        for track in tracks:
             title = track["name"]
-            track_number = track["track_number"]
+            position = track["track_number"]
             url = track["external_urls"]["spotify"]
-            length = arrow.get((track["duration_ms"]) / 1000).format("m [min] s [sec]")
+            duration = track["duration_ms"] / 1000
+            length = arrow.get(duration).format("h [hr] m [min] s [sec]" if duration > 3600 else "m [min] s [sec]")
 
-            if track["duration_ms"] / 1000 > 3600:
-                length = arrow.get((track["duration_ms"]) / 1000).format("h [hr] m [min] s [sec]")
-            elif track["explicit"]:
-                tracklist.append(f"**{track_number}**. [{title}]({url}) **E** - {length}")
+            if track["explicit"]:
+                tracklist.append(f"**{position}**. [{title}]({url}) **E** - {length}")
             else:
-                tracklist.append(f"**{track_number}**. [{title}]({url}) - {length}")
+                tracklist.append(f"**{position}**. [{title}]({url}) - {length}")
 
             duration += track["duration_ms"] / 1000
 
@@ -102,9 +101,9 @@ class Spotify(commands.Cog):
             embed.add_field("Length", arrow.get(duration).format("m [min] s [sec]"), inline=True)
 
         try:
-            # due to a quirk on the spotify api side, this array is omitted from the response
-            # if the market name is provided, as i guess for some reason spotify doesn't see
-            # a point to providing the array if you're searching for an album in a specific
+            # due to a quirk in the spotify api, the available_markets array is omitted from the
+            # response if the market name is provided, as i guess for some reason spotify doesn't
+            # see a point to providing the array if you're searching for an album in a specific
             # market.
             embed.add_field("Markets", len(album["available_markets"]), inline=True)
         except KeyError:
