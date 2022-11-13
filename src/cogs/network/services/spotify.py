@@ -21,12 +21,13 @@ class Spotify(commands.Cog):
 
     @spotify.sub_command()
     async def album(self, inter: Interaction, id: str = None, name: str = None, artist: str = None, year: int = None, market: str = None) -> None:
-        """Retrieves a specific album from Spotify.
+        """
+        Retrieves a specific album from Spotify. Defaults to the current Spotify activity if available.
 
         Parameters
         ----------
-        id: The album id. Optional if name is provided, required if not.
-        name: The album name. Optional if id is provided, required if not.
+        id: The album id. Optional if name or activity is provided, required if not.
+        name: The album name. Optional if id or activity is provided, required if not.
         artist: The artist who recorded the album. Optional.
         year: The year the album was recorded. Optional.
         market: The region to be searched, as a two-character country code. Optional.
@@ -46,23 +47,31 @@ class Spotify(commands.Cog):
                 query = f"album: {name}"
 
             results = self.client.spotify.search(query, 1, 0, "album", market)
-            items = results["albums"]["items"]
 
-            if len(items) > 0:
-                album = self.client.spotify.album(items[0]["id"], market)
+            if len(results["albums"]["items"]) > 0:
+                album = self.client.spotify.album(results["albums"]["items"][0]["id"], market)
                 tracks = self.client.spotify.album_tracks(album["id"], market=market)["items"]
             else:
                 return await inter.send("No albums were found matching this criteria.")
         elif name is not None and id is not None:
             return await inter.send("You cannot provide both an album name and album id.")
         else:
-            return await inter.send("Please provide either an album name or album id.")
+            if len(inter.author.activities) >= 1:
+                activity = inter.author.activity
+                if isinstance(activity, disnake.Spotify):
+                    track = self.client.spotify.track(activity.track_id, market)
+                    album = self.client.spotify.album(track["album"]["id"], market)
+                    tracks = self.client.spotify.album_tracks(track["album"]["id"], market=market)["items"]
+                else:
+                    return await inter.send("No current Spotify activity. Please provide an album name or id.")
+            else:
+                return await inter.send("Please provide either an album name or album id.")
 
         name = album["name"]
         id = album["id"]
         duration = 0
         released = arrow.get(album["release_date"]).format("MMM D, YYYY")
-        type = album["album_type"].title() if len(tracks) <= 1 or len(tracks) >= 6 else "Extended Play (EP)"
+        type = album["album_type"].title() if len(tracks) <= 1 or len(tracks) > 7 else "Extended Play (EP)"
         artists = list()
         tracklist = list()
 
@@ -105,7 +114,10 @@ class Spotify(commands.Cog):
             # response if the market name is provided, as i guess for some reason spotify doesn't
             # see a point to providing the array if you're searching for an album in a specific
             # market.
-            embed.add_field("Markets", len(album["available_markets"]), inline=True)
+            if len(album["available_markets"]) > 0:
+                embed.add_field("Markets", len(album["available_markets"]), inline=True)
+            else:
+                embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
             # insert empty field if we get a key error to avoid running into a discord bug
             # regarding embeds where if there are only two fields in a row, the discord client
@@ -118,12 +130,12 @@ class Spotify(commands.Cog):
 
     @spotify.sub_command()
     async def track(self, inter: Interaction, id: str = None, name: str = None, market: str = None) -> None:
-        """Retrieves information about a specific track from Spotify.
+        """Retrieves information about Spotify tracks.
 
         Parameters
         ----------
-        id: The track id. Optional if name is provided, required if not.
-        name: The track name. Optional if id is provided, required if not.
+        id: The track id. Not required if name or activity is provided, required if not.
+        name: The track name. Not required if id or activity is provided, required if not.
         market: The region to be searched, as a two-character country code. Optional.
         """
 
@@ -139,17 +151,19 @@ class Spotify(commands.Cog):
         elif id is not None and name is not None:
             return await inter.send("You cannot provide both a track id and name.")
         else:
-            return await inter.send("You must provide either a track name or id.")
+            if len(inter.author.activities) > 0:
+                activity = inter.author.activity
+                if isinstance(activity, disnake.Spotify):
+                    track = self.client.spotify.track(activity.track_id, market)
+                else:
+                    return await inter.send("No current Spotify activity found.")
+            else:
+                return await inter.send("You must provide either a track name or id.")
 
-        title = track["name"]
-        url = track["external_urls"]["spotify"]
         album = track["album"]["name"]
         album_url = track["album"]["external_urls"]["spotify"]
         duration = track["duration_ms"] / 1000
-        released = arrow.get(track["album"]["release_date"]).format("MMM D, YYYY")
         artists = list()
-        artwork = track["album"]["images"][0]["url"]
-        explicit = "Yes" if track["explicit"] else "No"
 
         for artist in track["artists"]:
             artist_name = artist["name"]
@@ -157,11 +171,11 @@ class Spotify(commands.Cog):
             artists.append(f"[{artist_name}]({artist_url})")
 
         embed = disnake.Embed(color=0x1DB954)
-        embed.title = title
-        embed.url = url
-        embed.set_thumbnail(artwork)
+        embed.title = track["name"]
+        embed.url = track["external_urls"]["spotify"]
+        embed.set_thumbnail(track["album"]["images"][0]["url"])
         embed.add_field("Album", f"[{album}]({album_url})", inline=True)
-        embed.add_field("Released", released, inline=True)
+        embed.add_field("Released", arrow.get(track["album"]["release_date"]).format("MMM D, YYYY"), inline=True)
 
         if duration > 3600:
             embed.add_field("Length", arrow.get(duration).format("h [hr] m [min] s [sec]"), inline=True)
@@ -169,7 +183,7 @@ class Spotify(commands.Cog):
             embed.add_field("Length", arrow.get(duration).format("m [min] s [sec]"), inline=True)
 
         embed.add_field("Artists", ", ".join(artists), inline=True)
-        embed.add_field("Explicit", explicit, inline=True)
+        embed.add_field("Explicit", "Yes" if track["explicit"] else "No", inline=True)
 
         try:
             embed.add_field("Markets", len(track["album"]["available_markets"]), inline=True)
