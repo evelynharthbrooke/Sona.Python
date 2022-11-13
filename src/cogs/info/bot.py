@@ -19,7 +19,6 @@ class Bot(commands.Cog):
     @commands.slash_command()
     async def bot(self, inter: ApplicationCommandInteraction) -> None:
         del inter
-        pass
 
     @bot.sub_command()
     async def about(self, inter: ApplicationCommandInteraction) -> None:
@@ -44,7 +43,6 @@ class Bot(commands.Cog):
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
         await inter.send(embed=embed)
-        pass
 
     @bot.sub_command()
     async def system(self, inter: ApplicationCommandInteraction):
@@ -81,16 +79,13 @@ class Bot(commands.Cog):
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
         await inter.send(embed=embed)
-        pass
 
     @bot.sub_command()
     async def source(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
 
         await inter.send(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
-        pass
 
 
 def setup(client: Client):
     client.add_cog(Bot(client))
-    pass

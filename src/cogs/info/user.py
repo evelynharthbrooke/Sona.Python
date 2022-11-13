@@ -12,7 +12,6 @@ class User(commands.Cog):
     async def user(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieve information about users."""
         del inter
-        pass
 
     @user.sub_command()
     async def id(self, inter: ApplicationCommandInteraction, member: Member = None) -> None:
@@ -28,7 +27,6 @@ class User(commands.Cog):
             return await inter.send(f"Hello **{name}**, your user ID is _{id}_.")
 
         await inter.send(f"The user ID for **{name}** is _{id}_.")
-        pass
 
     @user.sub_command()
     async def age(self, inter: ApplicationCommandInteraction, member: Member = None) -> None:
@@ -46,9 +44,7 @@ class User(commands.Cog):
             return await inter.send(f"You joined Discord on {join_date}, or _{humanized_join_date}_.")
 
         await inter.send(f"**{name}** joined Discord on {join_date}, or _{humanized_join_date}_.")
-        pass
 
 
 def setup(client: Client):
     client.add_cog(User(client))
-    pass
