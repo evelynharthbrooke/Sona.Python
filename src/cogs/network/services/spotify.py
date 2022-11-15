@@ -69,7 +69,14 @@ class Spotify(commands.Cog):
         for track in tracks:
             length += track["duration_ms"] / 1000
 
-            t_name = track["name"]
+            if inter.guild is not None and len(inter.author.activities) >= 1:
+                activity = inter.author.activity
+                if isinstance(activity, disnake.Spotify):
+                    a_title = activity.title
+                    t_name = f"**{track['name']}**" if a_title in track["name"] else track["name"]
+            else:
+                t_name = track["name"]
+
             t_pos = track["track_number"]
             t_url = track["external_urls"]["spotify"]
             t_explicit = track["explicit"]
@@ -87,11 +94,18 @@ class Spotify(commands.Cog):
         embed.add_field("Type", album["album_type"].title() if len(tracks) <= 1 or len(tracks) > 7 else "Extended Play (EP)", inline=True)
 
         try:
+            # due to a quirk in the spotify api, the available_markets array is omitted from the
+            # response if the market name is provided, as i guess for some reason spotify doesn't
+            # see a point to providing the array if you're searching for an album in a specific
+            # market.
             if len(album["available_markets"]) > 0:
                 embed.add_field("Markets", len(album["available_markets"]), inline=True)
             else:
                 embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
+            # insert empty field if we get a key error to avoid running into a discord bug
+            # regarding embeds where if there are only two fields in a row, the discord client
+            # will push the 2nd field to the right.
             embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
 
         embed.set_footer(text="Powered by the Spotify Web API.")
@@ -149,11 +163,18 @@ class Spotify(commands.Cog):
         embed.add_field("Length", arrow.get(length).format("h [hr] m [min] s [sec]" if length > 3600 else "m [min] s [sec]"), inline=True)
 
         try:
+            # due to a quirk in the spotify api, the available_markets array is omitted from the
+            # response if the market name is provided, as i guess for some reason spotify doesn't
+            # see a point to providing the array if you're searching for an album in a specific
+            # market.
             if len(album["available_markets"]) > 0:
                 embed.add_field("Markets", len(album["available_markets"]), inline=True)
             else:
                 embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
+            # insert empty field if we get a key error to avoid running into a discord bug
+            # regarding embeds where if there are only two fields in a row, the discord client
+            # will push the 2nd field to the right.
             embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
 
         embed.set_footer(text="Powered by the Spotify Web API.")
@@ -165,6 +186,9 @@ class Spotify(commands.Cog):
         """Retrieves a given user's Spotify status. Defaults to your own."""
 
         if inter.guild is None:
+            # due to the way discord activities work, they cannot be accessed from direct
+            # messages for some reason, so disallow the command from being used in guilds
+            # to avoid it breaking.
             return await inter.send("This command cannot be used from DMs.")
 
         member = inter.author if member is None else member
