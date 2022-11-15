@@ -18,8 +18,8 @@ class User(commands.Cog):
         """Retrieves a user's account ID. Defaults to your own account."""
 
         user = inter.author if member is None else member
-        name = member.name.title()
-        id = member.id
+        name = user.name.title()
+        id = user.id
 
         if user is inter.author:
             return await inter.send(f"Hello **{name}**, your user ID is _{id}_.")
@@ -31,9 +31,9 @@ class User(commands.Cog):
         """Retrieves a user's account age. Defaults to your own account."""
 
         user = inter.author if member is None else member
-        name = member.name
-        joined = arrow.get(member.created_at).format("MMMM D, YYYY")
-        joined_humanized = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
+        name = user.name
+        joined = arrow.get(user.created_at).format("MMMM D, YYYY")
+        joined_humanized = arrow.get(user.created_at).humanize(granularity=["year", "week", "day"])
 
         if user is inter.author:
             return await inter.send(f"You joined Discord on {joined}, or _{joined_humanized}_.")
