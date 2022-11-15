@@ -17,8 +17,6 @@ except ModuleNotFoundError:
 with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
-owners = config["general"]["owners"]
-
 sp_client_id = config["network"]["spotify"]["client_id"]
 sp_client_secret = config["network"]["spotify"]["client_secret"]
 
@@ -28,7 +26,6 @@ logger = logging.getLogger()
 class Client(commands.AutoShardedInteractionBot):
     def __init__(self):
         super().__init__(intents=disnake.Intents.all())
-        self.owners = owners
         self.uptime = arrow.now()
         self.process = psutil.Process()
         self.spotify = Spotify(auth_manager=SpotifyClientCredentials(client_id=sp_client_id, client_secret=sp_client_secret))
@@ -36,14 +33,7 @@ class Client(commands.AutoShardedInteractionBot):
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler(sys.stdout))
 
-    async def is_owner(self, user):
-        return user.id in self.owners or await super().is_owner(user)
-
     async def on_ready(self):
-        if self.owner_id is None:
-            app = await self.application_info()
-            self.owner_id = app.owner.id
-
         logger.info("-" * 23)
         logger.info("Disnake Information:")
         logger.info("-" * 23)
