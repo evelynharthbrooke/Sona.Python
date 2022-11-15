@@ -8,8 +8,6 @@ from client import Client
 
 
 class Spotify(commands.Cog):
-    """A set of commands for interacting with Spotify."""
-
     def __init__(self, client: Client) -> None:
         self.client = client
 
@@ -21,8 +19,7 @@ class Spotify(commands.Cog):
 
     @spotify.sub_command()
     async def album(self, inter: Interaction, id: str = None, name: str = None, artist: str = None, year: int = None, market: str = None) -> None:
-        """
-        Retrieves a specific album from Spotify. Defaults to the current Spotify activity if available.
+        """Retrieves a specific album from Spotify. Defaults to the current Spotify activity if available.
 
         Parameters
         ----------
@@ -33,30 +30,8 @@ class Spotify(commands.Cog):
         market: The region to be searched, as a two-character country code. Optional.
         """
 
-        if id is not None and name is None:
-            album = self.client.spotify.album(id, market)
-            tracks = self.client.spotify.album_tracks(id, market=market)["items"]
-        elif name is not None and id is None:
-            if artist is not None and year is None:
-                query = f"album: {name} artist: {artist}"
-            elif artist is None and year is not None:
-                query = f"album: {name} year: {year}"
-            elif artist is not None and year is not None:
-                query = f"album: {name} artist: {artist} year: {year}"
-            else:
-                query = f"album: {name}"
-
-            results = self.client.spotify.search(query, 1, 0, "album", market)
-
-            if len(results["albums"]["items"]) > 0:
-                album = self.client.spotify.album(results["albums"]["items"][0]["id"], market)
-                tracks = self.client.spotify.album_tracks(album["id"], market=market)["items"]
-            else:
-                return await inter.send("No albums were found matching this criteria.")
-        elif name is not None and id is not None:
-            return await inter.send("You cannot provide both an album name and album id.")
-        else:
-            if len(inter.author.activities) >= 1:
+        if id is None and name is None:
+            if inter.guild is not None and len(inter.author.activities) >= 1:
                 activity = inter.author.activity
                 if isinstance(activity, disnake.Spotify):
                     track = self.client.spotify.track(activity.track_id, market)
@@ -66,62 +41,57 @@ class Spotify(commands.Cog):
                     return await inter.send("No current Spotify activity. Please provide an album name or id.")
             else:
                 return await inter.send("Please provide either an album name or album id.")
+        elif id is not None and name is None:
+            album = self.client.spotify.album(id, market)
+            tracks = self.client.spotify.album_tracks(id, market=market)["items"]
+        elif name is not None and id is None:
+            query = f"album: {album}{f' artist: {artist}' if artist else ''}{f' year: {year}' if year else ''}"
+            results = self.client.spotify.search(query, 1, 0, "album", market)
+            if len(results["albums"]["items"]) > 0:
+                album = self.client.spotify.album(results["albums"]["items"][0]["id"], market)
+                tracks = self.client.spotify.album_tracks(album["id"], market=market)["items"]
+            else:
+                return await inter.send("No albums were found matching this criteria.")
+        else:
+            return await inter.send("You cannot provide both an album name and album id.")
 
-        name = album["name"]
-        id = album["id"]
-        duration = 0
-        released = arrow.get(album["release_date"]).format("MMM D, YYYY")
-        type = album["album_type"].title() if len(tracks) <= 1 or len(tracks) > 7 else "Extended Play (EP)"
+        title = album["name"]
+        url = album["external_urls"]["spotify"]
+        length = 0
         artists = list()
         tracklist = list()
 
         for artist in album["artists"]:
-            artist_name = artist["name"]
-            artist_url = artist["external_urls"]["spotify"]
-            artists.append(f"[{artist_name}]({artist_url})")
+            a_name = artist["name"]
+            a_url = artist["external_urls"]["spotify"]
+            artists.append(f"[{a_name}]({a_url})")
 
         for track in tracks:
-            title = track["name"]
-            position = track["track_number"]
-            url = track["external_urls"]["spotify"]
-            dur_ms = track["duration_ms"] / 1000
-            length = arrow.get(dur_ms).format("h [hr] m [min] s [sec]" if dur_ms > 3600 else "m [min] s [sec]")
+            length += track["duration_ms"] / 1000
 
-            if track["explicit"]:
-                tracklist.append(f"**{position}**. [{title}]({url}) **E** - {length}")
-            else:
-                tracklist.append(f"**{position}**. [{title}]({url}) - {length}")
+            t_name = track["name"]
+            t_pos = track["track_number"]
+            t_url = track["external_urls"]["spotify"]
+            t_explicit = track["explicit"]
+            t_time = track["duration_ms"] / 1000
+            t_length = arrow.get(t_time).format("h [hr] m [min] s [sec]" if t_time > 3600 else "m [min] s [sec]")
 
-            duration += track["duration_ms"] / 1000
+            tracklist.append(f"**{t_pos}**. [{t_name}]({t_url}){' **E**' if t_explicit else ''} - {t_length}")
 
-        embed = disnake.Embed(color=0x1DB954)
-        embed.title = name
-        embed.url = f"https://open.spotify.com/album/{id}"
-        embed.description = "\n".join(tracklist)
-        embed.set_thumbnail(album["images"][0]["url"])  # use largest image available
-        embed.add_field("Type", type, inline=True)
-        embed.add_field("Released", released, inline=True)
-        embed.add_field("Artists", ", ".join(artists), inline=True)
+        embed = disnake.Embed(title=title, url=url, description="\n".join(tracklist), color=0x1DB954)
+        embed.set_thumbnail(album["images"][0]["url"])
+        embed.add_field("Artist(s)", ", ".join(artists), inline=True)
+        embed.add_field("Length", arrow.get(length).format("h [hr] m [min] s [sec]" if length > 3600 else "m [min] s [sec]"), inline=True)
+        embed.add_field("Released", arrow.get(album["release_date"]).format("MMM D, YYYY"), inline=True)
         embed.add_field("Tracks", album["total_tracks"], inline=True)
-
-        if duration > 3600:
-            embed.add_field("Length", arrow.get(duration).format("h [hr] m [min] s [sec]"), inline=True)
-        else:
-            embed.add_field("Length", arrow.get(duration).format("m [min] s [sec]"), inline=True)
+        embed.add_field("Type", album["album_type"].title() if len(tracks) <= 1 or len(tracks) > 7 else "Extended Play (EP)", inline=True)
 
         try:
-            # due to a quirk in the spotify api, the available_markets array is omitted from the
-            # response if the market name is provided, as i guess for some reason spotify doesn't
-            # see a point to providing the array if you're searching for an album in a specific
-            # market.
             if len(album["available_markets"]) > 0:
                 embed.add_field("Markets", len(album["available_markets"]), inline=True)
             else:
                 embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
-            # insert empty field if we get a key error to avoid running into a discord bug
-            # regarding embeds where if there are only two fields in a row, the discord client
-            # will push the 2nd field to the right.
             embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
 
         embed.set_footer(text="Powered by the Spotify Web API.")
@@ -139,7 +109,16 @@ class Spotify(commands.Cog):
         market: The region to be searched, as a two-character country code. Optional.
         """
 
-        if id is not None and name is None:
+        if id is None and name is None:
+            if inter.guild is not None and len(inter.author.activities) >= 1:
+                activity = inter.author.activity
+                if isinstance(activity, disnake.Spotify):
+                    track = self.client.spotify.track(activity.track_id, market)
+                else:
+                    return await inter.send("No current Spotify activity found.")
+            else:
+                return await inter.send("You must provide either a track name or id.")
+        elif id is not None and name is None:
             track = self.client.spotify.track(id, market=market)
         elif id is None and name is not None:
             result = self.client.spotify.search(name, 1, 0, "track", market)
@@ -148,21 +127,12 @@ class Spotify(commands.Cog):
                 track = self.client.spotify.track(items[0]["id"], market)
             else:
                 return await inter.send("No tracks were found matching this criteria.")
-        elif id is not None and name is not None:
-            return await inter.send("You cannot provide both a track id and name.")
         else:
-            if len(inter.author.activities) > 0:
-                activity = inter.author.activity
-                if isinstance(activity, disnake.Spotify):
-                    track = self.client.spotify.track(activity.track_id, market)
-                else:
-                    return await inter.send("No current Spotify activity found.")
-            else:
-                return await inter.send("You must provide either a track name or id.")
+            return await inter.send("You cannot provide both a track id and name.")
 
         album = track["album"]["name"]
         album_url = track["album"]["external_urls"]["spotify"]
-        duration = track["duration_ms"] / 1000
+        length = track["duration_ms"] / 1000
         artists = list()
 
         for artist in track["artists"]:
@@ -170,23 +140,19 @@ class Spotify(commands.Cog):
             artist_url = artist["external_urls"]["spotify"]
             artists.append(f"[{artist_name}]({artist_url})")
 
-        embed = disnake.Embed(color=0x1DB954)
-        embed.title = track["name"]
-        embed.url = track["external_urls"]["spotify"]
+        embed = disnake.Embed(title=track["name"], url=track["external_urls"]["spotify"], color=0x1DB954)
         embed.set_thumbnail(track["album"]["images"][0]["url"])
+        embed.add_field("Artists", ", ".join(artists), inline=True)
         embed.add_field("Album", f"[{album}]({album_url})", inline=True)
         embed.add_field("Released", arrow.get(track["album"]["release_date"]).format("MMM D, YYYY"), inline=True)
-
-        if duration > 3600:
-            embed.add_field("Length", arrow.get(duration).format("h [hr] m [min] s [sec]"), inline=True)
-        else:
-            embed.add_field("Length", arrow.get(duration).format("m [min] s [sec]"), inline=True)
-
-        embed.add_field("Artists", ", ".join(artists), inline=True)
         embed.add_field("Explicit", "Yes" if track["explicit"] else "No", inline=True)
+        embed.add_field("Length", arrow.get(length).format("h [hr] m [min] s [sec]" if length > 3600 else "m [min] s [sec]"), inline=True)
 
         try:
-            embed.add_field("Markets", len(track["album"]["available_markets"]), inline=True)
+            if len(album["available_markets"]) > 0:
+                embed.add_field("Markets", len(album["available_markets"]), inline=True)
+            else:
+                embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
             embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
 
@@ -198,15 +164,11 @@ class Spotify(commands.Cog):
     async def status(self, inter: Interaction, member: Member = None) -> None:
         """Retrieves a given user's Spotify status. Defaults to your own."""
 
-        if inter.guild_id is None:
-            # due to the way discord activities work, they cannot be accessed from direct
-            # messages for some reason, so disallow the command from being used in guilds
-            # to avoid it breaking.
+        if inter.guild is None:
             return await inter.send("This command cannot be used from DMs.")
 
-        if member is None:
-            member = inter.author
-        elif member.bot:
+        member = inter.author if member is None else member
+        if member.bot:
             return await inter.send("Bots can't listen to music, silly.")
 
         name = member.name.title()
