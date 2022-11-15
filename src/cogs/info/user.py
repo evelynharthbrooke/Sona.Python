@@ -17,13 +17,11 @@ class User(commands.Cog):
     async def id(self, inter: ApplicationCommandInteraction, member: Member = None) -> None:
         """Retrieves a user's account ID. Defaults to your own account."""
 
-        if member is None:
-            member = inter.author
-
+        user = inter.author if member is None else member
         name = member.name.title()
         id = member.id
 
-        if member is inter.author:
+        if user is inter.author:
             return await inter.send(f"Hello **{name}**, your user ID is _{id}_.")
 
         await inter.send(f"The user ID for **{name}** is _{id}_.")
@@ -32,18 +30,15 @@ class User(commands.Cog):
     async def age(self, inter: ApplicationCommandInteraction, member: Member = None) -> None:
         """Retrieves a user's account age. Defaults to your own account."""
 
-        if member is None:
-            member = inter.author
-
+        user = inter.author if member is None else member
         name = member.name
+        joined = arrow.get(member.created_at).format("MMMM D, YYYY")
+        joined_humanized = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
 
-        join_date = arrow.get(member.created_at).format("MMMM D, YYYY")
-        humanized_join_date = arrow.get(member.created_at).humanize(granularity=["year", "week", "day"])
+        if user is inter.author:
+            return await inter.send(f"You joined Discord on {joined}, or _{joined_humanized}_.")
 
-        if member is inter.author:
-            return await inter.send(f"You joined Discord on {join_date}, or _{humanized_join_date}_.")
-
-        await inter.send(f"**{name}** joined Discord on {join_date}, or _{humanized_join_date}_.")
+        await inter.send(f"**{name}** joined Discord on {joined}, or _{joined_humanized}_.")
 
 
 def setup(client: Client):
