@@ -45,7 +45,7 @@ class Spotify(commands.Cog):
             album = self.client.spotify.album(id, market)
             tracks = self.client.spotify.album_tracks(id, market=market)["items"]
         elif name is not None and id is None:
-            query = f"album: {album}{f' artist: {artist}' if artist else ''}{f' year: {year}' if year else ''}"
+            query = f"album: {name}{f' artist: {artist}' if artist else ''}{f' year: {year}' if year else ''}"
             results = self.client.spotify.search(query, 1, 0, "album", market)
             if len(results["albums"]["items"]) > 0:
                 album = self.client.spotify.album(results["albums"]["items"][0]["id"], market)
