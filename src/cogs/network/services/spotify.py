@@ -167,8 +167,8 @@ class Spotify(commands.Cog):
             # response if the market name is provided, as i guess for some reason spotify doesn't
             # see a point to providing the array if you're searching for an album in a specific
             # market.
-            if len(album["available_markets"]) > 0:
-                embed.add_field("Markets", len(album["available_markets"]), inline=True)
+            if len(track["available_markets"]) > 0:
+                embed.add_field("Markets", len(track["available_markets"]), inline=True)
             else:
                 embed.add_field("Markets", "None (Delisted)", inline=True)
         except KeyError:
