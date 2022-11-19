@@ -106,7 +106,7 @@ class Spotify(commands.Cog):
             # insert empty field if we get a key error to avoid running into a discord bug
             # regarding embeds where if there are only two fields in a row, the discord client
             # will push the 2nd field to the right.
-            embed.insert_field_at(5, "\u200B", "\u200B", inline=True)
+            embed.insert_field_at(5, b"\u200B", b"\u200B", inline=True)
 
         embed.set_footer(text="Powered by the Spotify Web API.")
 

@@ -11,7 +11,8 @@ class User(commands.Cog):
     @commands.slash_command()
     async def user(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieve information about users."""
-        del inter
+        del inter # delete inter as we don't use it
+        pass
 
     @user.sub_command()
     async def id(self, inter: ApplicationCommandInteraction, member: Member = None) -> None:
