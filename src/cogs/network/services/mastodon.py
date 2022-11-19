@@ -1,10 +1,10 @@
-import requests
 import json
 
 import disnake
+import markdownify
+import requests
 from disnake import ApplicationCommandInteraction as Interaction
 from disnake.ext import commands
-import markdownify
 
 from client import Client
 
