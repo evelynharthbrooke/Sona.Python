@@ -95,10 +95,12 @@ class Mastodon(commands.Cog):
         rule_id = 0
         for rule in response["rules"]:
             rule_id += 1
-            rule_text = rule['text'].strip('\n')
+            rule_text = rule["text"].strip("\n")
             rules.append(f"{rule_id}. {rule_text}\n")
 
-        embed = disnake.Embed(title=title, description=f"{description}\n\n**Server Rules**: \n{''.join(rules)}", url=f"https://{url}")
+        embed_desc = description + "\n\n**Server Rules**:\n" + "".join(rules) if len(rules) > 0 else description
+
+        embed = disnake.Embed(title=title, description=embed_desc, url=f"https://{url}")
         embed.set_thumbnail(url=thumbnail)
         embed.add_field("Posts on Instance", posts)
         embed.add_field("Users on Instance", users)
