@@ -196,19 +196,16 @@ class Spotify(commands.Cog):
             return await inter.send("Bots can't listen to music, silly.")
 
         name = member.name.title()
-        activity = member.activity
 
-        if isinstance(activity, disnake.Spotify):
-            title = activity.title
-            artist = activity.artist
-            album = activity.album
-
-            if member is inter.author:
-                message = f"You are currently listening to **{title}** by **{artist}** on **{album}**."
-            else:
+        for activity in member.activities:
+            if isinstance(activity, disnake.Spotify):
+                title = activity.title
+                artist = activity.artist
+                album = activity.album
                 message = f"**{name}** is currently listening to **{title}** by **{artist}** on **{album}**."
-
-            return await inter.send(message)
+                if member is inter.author:
+                    message = f"You are currently listening to **{title}** by **{artist}** on **{album}**."
+                return await inter.send(message)
 
         if member is inter.author:
             return await inter.send("You aren't currently istening to anything.")
