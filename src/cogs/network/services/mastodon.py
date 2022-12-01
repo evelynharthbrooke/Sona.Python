@@ -1,10 +1,10 @@
 import json
 
-import disnake
-import markdownify
 import requests
 from disnake import ApplicationCommandInteraction as Interaction
+from disnake import Embed
 from disnake.ext import commands
+from markdownify import markdownify
 
 from client import Client
 
@@ -44,14 +44,14 @@ class Mastodon(commands.Cog):
         following = result["following_count"]
         followers = result["followers_count"]
 
-        embed = disnake.Embed(title=member, url=url, description=markdownify.markdownify(note))
-        embed.set_thumbnail(url=avatar)
+        embed = Embed(title=member, url=url, description=markdownify(note))
+        embed.set_thumbnail(avatar)
 
         for field in result["fields"]:
             name = field["name"]
-            value = markdownify.markdownify(field["value"])
+            value = markdownify(field["value"])
             if "http://" in value or "https://" in value:
-                value = markdownify.markdownify(f"[{name}]({field['value']})")
+                value = markdownify(f"[{name}]({field['value']})")
             embed.add_field(name, value)
             pass
 
@@ -77,12 +77,13 @@ class Mastodon(commands.Cog):
         ----------
         instance: the Mastodon instance to get information about.
         """
+
         request = requests.get(f"https://{instance}/api/v1/instance")
         response = json.loads(request.text)
 
         url = response["uri"]
         title = response["title"]
-        description = markdownify.markdownify(response["description"])
+        description = markdownify(response["description"])
         version = response["version"]
         thumbnail = response["thumbnail"]
         registrations = response["registrations"]
@@ -91,17 +92,17 @@ class Mastodon(commands.Cog):
         users = response["stats"]["user_count"]
         federated_instances = response["stats"]["domain_count"]
 
-        rules = list()
+        rules = []
         rule_id = 0
         for rule in response["rules"]:
             rule_id += 1
             rule_text = rule["text"].strip("\n")
             rules.append(f"{rule_id}. {rule_text}\n")
 
-        embed_desc = description + "\n\n**Server Rules**:\n" + "".join(rules) if len(rules) > 0 else description
+        embed_desc = description + ("\n\n**__Server Rules__**:\n" + "".join(rules) if len(rules) > 0 else "")
 
-        embed = disnake.Embed(title=title, description=embed_desc, url=f"https://{url}")
-        embed.set_thumbnail(url=thumbnail)
+        embed = Embed(title=title, description=embed_desc, url=f"https://{url}")
+        embed.set_thumbnail(thumbnail)
         embed.add_field("Posts on Instance", posts)
         embed.add_field("Users on Instance", users)
         embed.add_field("Federated With", f"{federated_instances} instances")

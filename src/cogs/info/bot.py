@@ -83,7 +83,6 @@ class Bot(commands.Cog):
     @bot.sub_command()
     async def source(self, inter: ApplicationCommandInteraction) -> None:
         """Retrieves a link to the bot's repository."""
-
         await inter.send(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
 
 
