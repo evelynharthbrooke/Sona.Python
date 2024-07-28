@@ -1,5 +1,5 @@
 arrow               # Nice date & time formatting library
-disnake[voice]      # Extensive Python library used to interact with the Discord API.
+py-cord[speed]      # Extensive Python library used to interact with the Discord API.
 markdownify         # Used for converting HTML to Markdown syntax.
 psutil              # Used to get various system information
 requests            # Used for HTTP requests

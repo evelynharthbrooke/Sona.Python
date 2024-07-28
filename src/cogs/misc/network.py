@@ -1,8 +1,8 @@
 import re
-
 import requests
-from disnake import ApplicationCommandInteraction
-from disnake.ext import commands
+import discord
+from discord import ApplicationContext
+from discord.ext import commands
 
 from client import Client
 
@@ -10,8 +10,8 @@ from client import Client
 class Network(commands.Cog):
     """Commands that interface with web services & APIs."""
 
-    @commands.slash_command()
-    async def kernel(self, inter: ApplicationCommandInteraction):
+    @discord.slash_command()
+    async def kernel(self, context: ApplicationContext):
         """Retrieves the latest available Linux kernel versions."""
 
         request = requests.get("https://www.kernel.org/finger_banner").text
@@ -20,7 +20,7 @@ class Network(commands.Cog):
         versions = "\n".join(version for version in regex_b[:-1])
         message = f"**__Available Linux Kernel Versions:__**\n\n{versions}"
 
-        await inter.send(message)
+        await context.respond(message)
 
 
 def setup(client: Client):

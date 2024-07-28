@@ -1,10 +1,9 @@
 import platform
-
 import arrow
+import discord
 import psutil
-from disnake import ApplicationCommandInteraction, Color, Embed
-from disnake import __version__ as disnake_version
-from disnake.ext import commands
+from discord import ApplicationContext, SlashCommandGroup, Color, Embed, __version__ as discord_version
+from discord.ext import commands
 
 from client import Client
 from constants import hash, version
@@ -16,36 +15,33 @@ class Bot(commands.Cog):
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    @commands.slash_command()
-    async def bot(self, inter: ApplicationCommandInteraction) -> None:
-        del inter
+    bot = discord.SlashCommandGroup("bot", "Retrieve information about the bot.")
 
-    @bot.sub_command()
-    async def about(self, inter: ApplicationCommandInteraction) -> None:
+    @bot.command()
+    async def about(self, context: ApplicationContext) -> None:
         """Retrieves information about the bot."""
 
-        avatar_url = self.client.user.avatar.url
         name = self.client.user.name
-
+        avatar = self.client.user.avatar.url
         users = len(self.client.users)
         guilds = len(self.client.guilds)
         uptime = self.client.uptime.humanize()
-
         python = platform.python_version()
-        commands = len(self.client.slash_commands)
-        cogs = len(self.client.cogs)
 
         embed = Embed(color=Color.blurple())
-        embed.set_author(name=name, icon_url=avatar_url)
-        embed.add_field("__**Basic Info:**__", f"**Started:** {uptime}\n**Version:** {version} (rev. {hash})\n**Users:** {users}\n**Guilds:** {guilds}")
-        embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Statistics:**__", f"**Disnake:** {disnake_version}\n**Python:** {python}\n**Commands:** {commands}\n**Cogs:** {cogs}")
+        embed.set_author(name=name, icon_url=avatar)
+        embed.add_field(name="Started", value=uptime, inline=True)
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="Version", value=f"{version} (rev. `{hash}`)", inline=True)
+        embed.add_field(name="Users", value=users, inline=True)
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="Guilds", value=guilds, inline=True)
         embed.set_footer(text=f"{name} user ID: {self.client.user.id}")
 
-        await inter.send(embed=embed)
+        await context.respond(embed=embed)
 
-    @bot.sub_command()
-    async def system(self, inter: ApplicationCommandInteraction):
+    @bot.command()
+    async def system(self, context: ApplicationContext):
         """Gets information about the bot's host system."""
 
         name = self.client.user.name
@@ -70,20 +66,20 @@ class Bot(commands.Cog):
         embed = Embed(color=Color.blurple())
         embed.description = f"Information about {name}'s host system."
         embed.set_author(name=f"{name} System Statistics", icon_url=avatar)
-        embed.add_field("__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq}")
-        embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**System:**__", value=f"**Started:** {uptime}")
-        embed.add_field("__**Memory:**__", value=f"**Total:** {mem_total}\n**Used:** {mem_used}\n**Free:** {mem_free}")
-        embed.add_field("\u200B", "\u200B")
-        embed.add_field("__**Process:**__", value=f"**Memory:** {proc_mem}\n**Threads:** {proc_threads}\n**CPU:** {proc_load}")
+        embed.add_field(name="__**CPU:**__", value=f"**Cores:** {cores}\n**Threads:** {threads}\n**Load:** {load}\n**Frequency:** {freq}")
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="__**System:**__", value=f"**Started:** {uptime}")
+        embed.add_field(name="__**Memory:**__", value=f"**Total:** {mem_total}\n**Used:** {mem_used}\n**Free:** {mem_free}")
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="__**Process:**__", value=f"**Memory:** {proc_mem}\n**Threads:** {proc_threads}\n**CPU:** {proc_load}")
         embed.set_footer(text=f"{name} process identifier: {proc_id}")
 
-        await inter.send(embed=embed)
+        await context.respond(embed=embed)
 
-    @bot.sub_command()
-    async def source(self, inter: ApplicationCommandInteraction) -> None:
+    @bot.command()
+    async def source(self, context: ApplicationContext) -> None:
         """Retrieves a link to the bot's repository."""
-        await inter.send(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
+        await context.respond(f"You can view Sona's git repository here: <https://github.com/evelynmarie/Sona>")
 
 
 def setup(client: Client):

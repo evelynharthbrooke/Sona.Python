@@ -1,22 +1,19 @@
+import discord
 import json
-
 import requests
-from disnake import ApplicationCommandInteraction as Interaction
-from disnake import Embed
-from disnake.ext import commands
+from discord import ApplicationContext, Embed
+from discord.ext import commands
 from markdownify import markdownify
 
 from client import Client
 
 
 class Mastodon(commands.Cog):
-    @commands.slash_command()
-    async def mastodon(self, inter: Interaction) -> None:
-        del inter  # delete inter as we aren't using it
-        pass
+    mastodon = discord.SlashCommandGroup("mastodon", "Commands for interacting with the Mastodon social network.")
+    instance = mastodon.create_subgroup("instance", "Commands related to Mastodon instances")
 
-    @mastodon.sub_command()
-    async def user(self, inter: Interaction, instance: str, user: str) -> None:
+    @mastodon.command()
+    async def user(self, context: ApplicationContext, instance: str, user: str) -> None:
         """View information about a user on the Mastodon federated social network.
 
         Parameters
@@ -30,7 +27,7 @@ class Mastodon(commands.Cog):
         result = response["accounts"]
 
         if len(result) < 1:
-            return await inter.send("No users were found that match this criteria.")
+            return await context.respond("No users were found that match this criteria.")
 
         for account in result:
             if account["acct"] == user:
@@ -45,32 +42,27 @@ class Mastodon(commands.Cog):
         followers = result["followers_count"]
 
         embed = Embed(title=member, url=url, description=markdownify(note))
-        embed.set_thumbnail(avatar)
+        embed.set_thumbnail(url=avatar)
 
         for field in result["fields"]:
             name = field["name"]
             value = markdownify(field["value"])
             if "http://" in value or "https://" in value:
                 value = markdownify(f"[{name}]({field['value']})")
-            embed.add_field(name, value)
+            embed.add_field(name=name, value=value)
             pass
 
-        embed.add_field("Posts", statuses)
-        embed.add_field("Following", following)
-        embed.add_field("Followers", followers)
+        embed.add_field(name="Posts", value=statuses)
+        embed.add_field(name="Following", value=following)
+        embed.add_field(name="Followers", value=followers)
 
         if len(embed.fields) < 6:
-            embed.add_field("\u200B", "\u200B")
+            embed.add_field(name="\u200B", value="\u200B")
 
-        await inter.send(embed=embed)
+        await context.respond(embed=embed)
 
-    @mastodon.sub_command_group()
-    async def instance(self, inter: Interaction) -> None:
-        del inter  # delete inter as we aren't using it
-        pass
-
-    @instance.sub_command()
-    async def info(self, inter: Interaction, instance: str) -> None:
+    @instance.command()
+    async def info(self, context: ApplicationContext, instance: str) -> None:
         """Retrieves information about a given Mastodon instance.
 
         Parameters
@@ -103,15 +95,15 @@ class Mastodon(commands.Cog):
 
         embed = Embed(title=title, description=embed_desc, url=f"https://{url}")
         embed.set_thumbnail(thumbnail)
-        embed.add_field("Posts on Instance", posts)
-        embed.add_field("Users on Instance", users)
-        embed.add_field("Federated With", f"{federated_instances} instances")
-        embed.add_field("Registrations Open", "Yes" if registrations else "No")
-        embed.add_field("Approval Required", "Yes" if approval_required else "No")
-        embed.add_field("Mastodon Version", version)
+        embed.add_field(name="Posts on Instance", value=posts)
+        embed.add_field(name="Users on Instance", value=users)
+        embed.add_field(name="Federated With", value=f"{federated_instances} instances")
+        embed.add_field(name="Registrations Open", value="Yes" if registrations else "No")
+        embed.add_field(name="Approval Required", value="Yes" if approval_required else "No")
+        embed.add_field(name="Mastodon Version", value=version)
         embed.set_footer(text="Powered by the Mastodon API.")
 
-        return await inter.send(embed=embed)
+        return await context.respond(embed=embed)
 
 
 def setup(client: Client):

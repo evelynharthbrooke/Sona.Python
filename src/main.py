@@ -8,9 +8,7 @@ from client import Client
 with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
-
-token = config["general"]["token"]
-
 bot = Client()
+token = config["general"]["token"]
 
 bot.run(token)

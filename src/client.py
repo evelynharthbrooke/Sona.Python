@@ -3,9 +3,10 @@ import platform
 import sys
 
 import arrow
-import disnake
+import constants
+import discord
 import psutil
-from disnake.ext import commands
+from discord.ext import commands
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 
@@ -17,15 +18,15 @@ except ModuleNotFoundError:
 with open("./config.toml", mode="rb") as c:
     config = tomllib.load(c)
 
+logger = logging.getLogger()
+hb_timeout = config["general"]["heartbeat_timeout"]
 sp_client_id = config["network"]["spotify"]["client_id"]
 sp_client_secret = config["network"]["spotify"]["client_secret"]
 
-logger = logging.getLogger()
 
-
-class Client(commands.AutoShardedInteractionBot):
+class Client(commands.AutoShardedBot):
     def __init__(self):
-        super().__init__(intents=disnake.Intents.all())
+        super().__init__(intents=discord.Intents.all(), heartbeat_timeout=hb_timeout)
         self.uptime = arrow.now()
         self.process = psutil.Process()
         self.spotify = Spotify(auth_manager=SpotifyClientCredentials(client_id=sp_client_id, client_secret=sp_client_secret))
@@ -35,23 +36,21 @@ class Client(commands.AutoShardedInteractionBot):
 
     async def on_ready(self):
         logger.info("-" * 30)
-        logger.info("Disnake Information:" )
+        logger.info("Version Information:")
         logger.info("-" * 30)
-        logger.info("Version:            %s", disnake.__version__)
-        logger.info("Python:             %s", platform.python_version())
+        logger.info("Python version:     %s", platform.python_version())
+        logger.info("Pycord version:     %s", discord.__version__)
+        logger.info("Bot version:        %s", constants.version)
         logger.info("-" * 30)
         logger.info("Discord Bot Information:")
         logger.info("-" * 30)
         logger.info("Bot name:           %s", self.user)
         logger.info("Bot id:             %d", self.user.id)
-        logger.info("Bot owner:          %s", self.owner)
         logger.info("Bot created:        %s", self.user.created_at)
         logger.info("Total shards:       %d", self.shard_count)
         logger.info("Total servers:      %d", len(self.guilds))
         logger.info("Total channels:     %d", len(set(self.get_all_channels())))
         logger.info("Total users:        %d", len(set(self.get_all_members())))
-        logger.info("Total commands:     %d", len(self.slash_commands))
-        logger.info("Total cogs:         %d", len(self.cogs))
 
     def run(self, *args, **kwargs):
         self.load_extension("cogs.info.bot")
